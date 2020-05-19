@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static spark.Spark.*;
-import static wantsome.project.web.SparkUtil.render;
+import static wantsome.project.ui.web.SparkUtil.render;
 
 /**
  * Main class of the application

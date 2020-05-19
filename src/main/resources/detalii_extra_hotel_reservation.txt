@@ -1,0 +1,47 @@
+3) Hotel Reservation
+
+DB tables:
+- required: clients, reservations, rooms
+- nice to have (later): users
+
+clients:
+- id integer pk autoincrement,
+- name text mandatory,
+- email text mandatory,
+- address text mandatory
+
+reservations:
+- id integer pk autoincrement,
+- client_id mandatory,
+- start_date mandatory,
+- end_date,
+- room_id mandatory,
+- extra_info
+- payment method
+
+rooms:
+- number integer pk
+- room_type_id mandatory
+- extra_info optional
+
+room_types:
+- id... mandatory
+- description mandatory
+- rate mandatory
+- capacity mandatory
+
+extra_facilities:
+- id
+- price per day
+- description
+- capacity(ex parking )
+-
+
+---------------------------------------------
+Functionality to implement (actions/pages):
+- see all reservations (filter: date interval, room type)
+- add new reservation
+- edit reservation (update details, cancel)
+- list of available rooms (filter: date interval, room type) - important for
+avoiding double booking/conflicting reservations, when creating a new one
+- checkout - compute an invoice
