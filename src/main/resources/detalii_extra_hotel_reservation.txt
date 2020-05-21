@@ -16,8 +16,10 @@ reservations:
 - start_date mandatory,
 - end_date,
 - room_id mandatory,
-- extra_info
-- payment method
+- extra_info,
+- extra_facilities optional,
+- payment method,
+
 
 rooms:
 - number integer pk
@@ -34,8 +36,6 @@ extra_facilities:
 - id
 - price per day
 - description
-- capacity(ex parking )
--
 
 ---------------------------------------------
 Functionality to implement (actions/pages):

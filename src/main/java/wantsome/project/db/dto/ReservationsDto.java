@@ -1,6 +1,7 @@
 package wantsome.project.db.dto;
 
 import java.sql.Date;
+import java.time.LocalDate;
 import java.util.Objects;
 
 public class ReservationsDto {
@@ -11,19 +12,30 @@ public class ReservationsDto {
     private final Date endDate;
     private final long roomId;
     private final String extraInfo;
-    private final long extraFacilities_Id;
+    private final String extraFacilities;
     private final String payment;
+    private final Date createdAt;
 
-    public ReservationsDto(long id, long clientId, Date startDate, Date endDate, long roomId, String extraInfo, long extraFacilities_Id, String payment) {
+    //Constructor for when a particular reservation already exists and has a creation date and I don't want to replace the initial one
+    public ReservationsDto(long id, long clientId, Date startDate, Date endDate,
+                           long roomId, String extraInfo, String extraFacilities, String payment, Date createdAt) {
         this.id = id;
         this.clientId = clientId;
         this.startDate = startDate;
         this.endDate = endDate;
         this.roomId = roomId;
         this.extraInfo = extraInfo;
-        this.extraFacilities_Id = extraFacilities_Id ;
+        this.extraFacilities = extraFacilities;
         this.payment = payment;
+        this.createdAt = createdAt;
     }
+
+    //Constructor for when a new reservation is created and I want the accurate date without inserting it
+    public ReservationsDto(long id, long clientId, Date startDate, Date endDate,
+                           long roomId, String extraInfo, String extraFacilities, String payment) {
+        this(id, clientId, startDate, endDate, roomId, extraInfo, extraFacilities, payment, Date.valueOf(LocalDate.now()));
+    }
+
 
     public long getId() {
         return id;
@@ -49,13 +61,38 @@ public class ReservationsDto {
         return extraInfo;
     }
 
-    public long getExtraFacilities_Id () {
+    public String getExtraFacilities() {
 
-        return extraFacilities_Id;
+        return extraFacilities;
     }
 
     public String getPayment() {
         return payment;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ReservationsDto that = (ReservationsDto) o;
+        return id == that.id &&
+                clientId == that.clientId &&
+                roomId == that.roomId &&
+                Objects.equals(startDate, that.startDate) &&
+                Objects.equals(endDate, that.endDate) &&
+                Objects.equals(extraInfo, that.extraInfo) &&
+                Objects.equals(extraFacilities, that.extraFacilities) &&
+                Objects.equals(payment, that.payment) &&
+                Objects.equals(createdAt, that.createdAt);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, clientId, startDate, endDate, roomId, extraInfo, extraFacilities, payment, createdAt);
     }
 
     @Override
@@ -67,28 +104,9 @@ public class ReservationsDto {
                 ", endDate=" + endDate +
                 ", roomId=" + roomId +
                 ", extraInfo='" + extraInfo + '\'' +
-                ", extraFacilities_Id=" + extraFacilities_Id +
+                ", extraFacilities='" + extraFacilities + '\'' +
                 ", payment='" + payment + '\'' +
+                ", createdAt=" + createdAt +
                 '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ReservationsDto that = (ReservationsDto) o;
-        return id == that.id &&
-                clientId == that.clientId &&
-                roomId == that.roomId &&
-                extraFacilities_Id == that.extraFacilities_Id &&
-                Objects.equals(startDate, that.startDate) &&
-                Objects.equals(endDate, that.endDate) &&
-                Objects.equals(extraInfo, that.extraInfo) &&
-                Objects.equals(payment, that.payment);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, clientId, startDate, endDate, roomId, extraInfo, extraFacilities_Id, payment);
     }
 }
