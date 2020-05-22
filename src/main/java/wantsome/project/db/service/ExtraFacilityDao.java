@@ -1,8 +1,8 @@
 package wantsome.project.db.service;
 
 import wantsome.project.db.DbManager;
+import wantsome.project.db.dto.ExtraFacilityDto;
 import wantsome.project.db.dto.ExtraServices;
-import wantsome.project.db.dto.Extra_facilitiesDto;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,12 +12,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class Extra_facilities_Dao {
-    public List<Extra_facilitiesDto> getAll() {
+public class ExtraFacilityDao {
+    public List<ExtraFacilityDto> getAll() {
         String sql = "SELECT * " +
                 "FROM EXTRA_FACILITIES ";
 
-        List<Extra_facilitiesDto> facilities = new ArrayList<>();
+        List<ExtraFacilityDto> facilities = new ArrayList<>();
 
         try (Connection conn = DbManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
@@ -33,16 +33,16 @@ public class Extra_facilities_Dao {
         return facilities;
     }
 
-    public Optional<Extra_facilitiesDto> get(long id) {
+    public Optional<ExtraFacilityDto> get(ExtraServices service) {//TODO
         String sql = "SELECT * FROM EXTRA_FACILITIES WHERE FACILITY = ?";
 
         try (Connection connection = DbManager.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setLong(1, id);
+            ps.setString(1, service.name());
 
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    Extra_facilitiesDto facility = extractFacilityFromResult(rs);
+                    ExtraFacilityDto facility = extractFacilityFromResult(rs);
                     return Optional.of(facility);
                 }
             }
@@ -52,7 +52,7 @@ public class Extra_facilities_Dao {
         return Optional.empty();
     }
 
-    public void insert(Extra_facilitiesDto facility) {
+    public void insert(ExtraFacilityDto facility) {
 
         String sql = "INSERT INTO EXTRA_FACILITIES " +
                 "(FACILITY, PRICE)" +
@@ -72,7 +72,7 @@ public class Extra_facilities_Dao {
 
     }
 
-    public void update(Extra_facilitiesDto facility) {
+    public void update(ExtraFacilityDto facility) {
         String sql = "UPDATE EXTRA_FACILITIES" +
                 "SET PRICE = ?" +
                 "WHERE FACILITY = ?";
@@ -104,11 +104,11 @@ public class Extra_facilities_Dao {
     }
 
 
-    private Extra_facilitiesDto extractFacilityFromResult(ResultSet rs) throws SQLException {
+    private ExtraFacilityDto extractFacilityFromResult(ResultSet rs) throws SQLException {
 
         ExtraServices facility = ExtraServices.valueOf(rs.getString("FACILITY"));
         double price = rs.getDouble("PRICE");
 
-        return new Extra_facilitiesDto(facility, price);
+        return new ExtraFacilityDto(facility, price);
     }
 }

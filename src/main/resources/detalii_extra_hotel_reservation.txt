@@ -15,27 +15,25 @@ reservations:
 - client_id mandatory,
 - start_date mandatory,
 - end_date,
-- room_id mandatory,
+- room_number mandatory,
 - extra_info,
 - extra_facilities optional,
-- payment method,
+- payment method
 
 
 rooms:
-- number integer pk
+- number integer pk autoincrement
 - room_type_id mandatory
 - extra_info optional
 
 room_types:
-- id... mandatory
-- description mandatory
-- rate mandatory
+- description pk
+- price mandatory
 - capacity mandatory
 
 extra_facilities:
-- id
+- description pk
 - price per day
-- description
 
 ---------------------------------------------
 Functionality to implement (actions/pages):

@@ -1,5 +1,5 @@
 package wantsome.project.db.dto;
 
-public enum Payment_method {
+public enum PaymentMethod {
     CARD, CASH
 }

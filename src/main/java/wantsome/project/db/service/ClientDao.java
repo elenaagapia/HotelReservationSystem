@@ -1,7 +1,7 @@
 package wantsome.project.db.service;
 
 import wantsome.project.db.DbManager;
-import wantsome.project.db.dto.ClientsDto;
+import wantsome.project.db.dto.ClientDto;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,14 +11,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class Clients_Dao {
+public class ClientDao {
 
-    public List<ClientsDto> getAll() {
+    public List<ClientDto> getAll() {
         String sql = "SELECT * " +
                 "FROM CLIENTS " +
                 "ORDER BY NAME";
 
-        List<ClientsDto> clients = new ArrayList<>();
+        List<ClientDto> clients = new ArrayList<>();
 
         try (Connection conn = DbManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
@@ -34,7 +34,7 @@ public class Clients_Dao {
         return clients;
     }
 
-    public Optional<ClientsDto> get(long id) {
+    public Optional<ClientDto> get(long id) {
         String sql = "SELECT * FROM CLIENTS WHERE ID = ?";
 
         try (Connection connection = DbManager.getConnection();
@@ -43,38 +43,38 @@ public class Clients_Dao {
 
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    ClientsDto client = extractClientFromResult(rs);
+                    ClientDto client = extractClientFromResult(rs);
                     return Optional.of(client);
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Error loading client with id:" + id + e.getMessage());
         }
         return Optional.empty();
     }
 
-    public void insert(ClientsDto client) {
+    public void insert(ClientDto client) {
 
         String sql = "INSERT INTO CLIENTS " +
                 "(NAME,EMAIL,ADDRESS)" +
                 "VALUES (?,?,?)";
 
         try (Connection connection = DbManager.getConnection();
-             PreparedStatement prepstmnt = connection.prepareStatement(sql)) {
+             PreparedStatement ps = connection.prepareStatement(sql)) {
 
-            prepstmnt.setString(1, client.getName());
-            prepstmnt.setString(2, client.getEmail());
-            prepstmnt.setString(3, client.getAddress());
+            ps.setString(1, client.getName());
+            ps.setString(2, client.getEmail());
+            ps.setString(3, client.getAddress());
 
-            prepstmnt.execute();
+            ps.execute();
 
         } catch (SQLException e) {
-            System.err.println("Error inserting client " + client + e.getMessage());
+            System.err.println("Error inserting client " + client.getName() + e.getMessage());
         }
 
     }
 
-    public void update(ClientsDto client) {
+    public void update(ClientDto client) {
         String sql = "UPDATE CLIENTS" +
                 "SET NAME = ?, " +
                 "EMAIL = ?," +
@@ -110,13 +110,13 @@ public class Clients_Dao {
     }
 
 
-    private ClientsDto extractClientFromResult(ResultSet rs) throws SQLException {
+    private ClientDto extractClientFromResult(ResultSet rs) throws SQLException {
 
         long id = rs.getLong("ID");
         String name = rs.getString("NAME");
         String email = rs.getString("EMAIL");
         String address = rs.getString("ADDRESS");
 
-        return new ClientsDto(id, name, email, address);
+        return new ClientDto(id, name, email, address);
     }
 }

@@ -1,15 +1,15 @@
 package wantsome.project.db.service;
 
 import wantsome.project.db.DbManager;
-import wantsome.project.db.dto.Room_typesDto;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
 import static wantsome.project.db.dto.ExtraServices.*;
-import static wantsome.project.db.dto.Payment_method.CARD;
-import static wantsome.project.db.dto.Payment_method.CASH;
+import static wantsome.project.db.dto.PaymentMethod.CARD;
+import static wantsome.project.db.dto.PaymentMethod.CASH;
+import static wantsome.project.db.dto.RoomTypes.*;
 
 
 /**
@@ -23,10 +23,10 @@ public class DbInitService {
             "CLIENT_ID INTEGER NOT NULL REFERENCES CLIENTS(ID), " +
             "START_DATE DATETIME NOT NULL, " +
             "END_DATE DATETIME NOT NULL, " +
-            "ROOM_ID INTEGER NOT NULL, " +
+            "ROOM_NUMBER INTEGER NOT NULL, " +
             "EXTRA_FACILITY TEXT REFERENCES EXTRA_FACILITIES(FACILITY)," +
             "EXTRA_INFO TEXT, " +
-            "PAYMENT_METHOD TEXT CHEK(PAYMENT_METHOD IN ('" + CARD + "', '" + CASH + "'))" +
+            "PAYMENT_METHOD TEXT CHECK(PAYMENT_METHOD IN ('" + CARD + "', '" + CASH + "'))" +
             "CREATED_AT DATETIME NOT NULL " +
             ");";
 
@@ -38,13 +38,13 @@ public class DbInitService {
             ");";
 
     private static final String CREATE_ROOMS_SQL = "CREATE TABLE IF NOT EXISTS ROOMS ( " +
-            "ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            "NUMBER INTEGER PRIMARY KEY AUTOINCREMENT, " +
             "ROOM_TYPE_DESCRIPTION TEXT REFERENCES ROOM_TYPES(DESCRIPTION) " +
             "EXTRA_INFO TEXT" +
             ");";
 
     private static final String CREATE_ROOM_TYPES_SQL = "CREATE TABLE IF NOT EXISTS ROOM_TYPES ( " +
-            "DESCRIPTION TEXT PRIMARY KEY , " +
+            "DESCRIPTION TEXT CHECK (DESCRIPTION IN ('" + SINGLE + "', '" + DOUBLE + "', '" + TWIN + "', '" + APARTMENT + "')) PRIMARY KEY , " +
             "PRICE DOUBLE NOT NULL," +
             "CAPACITY INTEGER NOT NULL" +
             ");";
@@ -73,14 +73,4 @@ public class DbInitService {
         }
     }
 
-    private static void insertInitialData() {
-        Room_Types_Dao roomTypeDao = new Room_Types_Dao();
-        if (roomTypeDao.getAll().isEmpty()) { //add only if empty db
-            roomTypeDao.insert(new Room_typesDto("Single", 30.0, 1));
-            roomTypeDao.insert(new Room_typesDto("Double", 50.0, 2));
-            roomTypeDao.insert(new Room_typesDto("Twin", 50.0, 2));
-            roomTypeDao.insert(new Room_typesDto("Apartment", 100.0, 4));
-
-        }
-    }
 }

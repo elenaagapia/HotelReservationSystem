@@ -1,20 +1,20 @@
 package wantsome.project.db.service;
 
 import wantsome.project.db.DbManager;
-import wantsome.project.db.dto.ReservationsDto;
+import wantsome.project.db.dto.ReservationDto;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class Reservations_Dao {
-    public List<ReservationsDto> getAll() {
+public class ReservationDao {
+    public List<ReservationDto> getAll() {
         String sql = "SELECT * " +
                 "FROM RESERVATIONS " +
                 "ORDER BY START_DATE";
 
-        List<ReservationsDto> reservations = new ArrayList<>();
+        List<ReservationDto> reservations = new ArrayList<>();
 
         try (Connection conn = DbManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
@@ -30,7 +30,7 @@ public class Reservations_Dao {
         return reservations;
     }
 
-    public Optional<ReservationsDto> get(long id) {
+    public Optional<ReservationDto> get(long id) {
         String sql = "SELECT * FROM RESERVATIONS WHERE ID = ?";
 
         try (Connection connection = DbManager.getConnection();
@@ -39,7 +39,7 @@ public class Reservations_Dao {
 
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    ReservationsDto reservation = extractReservationsFromResult(rs);
+                    ReservationDto reservation = extractReservationsFromResult(rs);
                     return Optional.of(reservation);
                 }
             }
@@ -49,7 +49,7 @@ public class Reservations_Dao {
         return Optional.empty();
     }
 
-    public void insert(ReservationsDto reservation) {
+    public void insert(ReservationDto reservation) {
 
         String sql = "INSERT INTO RESERVATIONS " +
                 "(CLIENT_ID,START_DATE,END_DATE,ROOM_ID," +
@@ -62,7 +62,7 @@ public class Reservations_Dao {
             ps.setLong(1, reservation.getClientId());
             ps.setDate(2, reservation.getStartDate());
             ps.setDate(3, reservation.getEndDate());
-            ps.setLong(4, reservation.getRoomId());
+            ps.setLong(4, reservation.getRoomNumber());
             ps.setString(5, reservation.getExtraInfo());
             ps.setString(6, reservation.getExtraFacilities());
             ps.setString(7, reservation.getPayment());
@@ -76,7 +76,7 @@ public class Reservations_Dao {
 
     }
 
-    public void update(ReservationsDto reservation) {
+    public void update(ReservationDto reservation) {
         String sql = "UPDATE RESERVATIONS   " +
                 "SET CLIENT_ID = ?, " +
                 "START_DATE = ?," +
@@ -94,7 +94,7 @@ public class Reservations_Dao {
             ps.setLong(1, reservation.getClientId());
             ps.setDate(2, reservation.getStartDate());
             ps.setDate(3, reservation.getEndDate());
-            ps.setLong(4, reservation.getRoomId());
+            ps.setLong(4, reservation.getRoomNumber());
             ps.setString(5, reservation.getExtraInfo());
             ps.setString(6, reservation.getExtraFacilities());
             ps.setString(7, reservation.getPayment());
@@ -121,7 +121,7 @@ public class Reservations_Dao {
     }
 
 
-    private ReservationsDto extractReservationsFromResult(ResultSet rs) throws SQLException {
+    private ReservationDto extractReservationsFromResult(ResultSet rs) throws SQLException {
 
         long id = rs.getLong("ID");
         long clientId = rs.getLong("CLIENT_ID");
@@ -133,6 +133,6 @@ public class Reservations_Dao {
         String paymentMethod = rs.getString("PAYMENT_METHOD");
         Date createdAt = rs.getDate("CREATED_AT");
 
-        return new ReservationsDto(id, clientId, startDate, endDate, roomId, extraInfo, extraFacilities, paymentMethod, createdAt);
+        return new ReservationDto(id, clientId, startDate, endDate, roomId, extraInfo, extraFacilities, paymentMethod, createdAt);
     }
 }

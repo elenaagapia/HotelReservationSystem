@@ -2,20 +2,20 @@ package wantsome.project.db.dto;
 
 import java.util.Objects;
 
-public class Room_typesDto {
+public class RoomTypeDto {
 
-    private final String description;
+    private final RoomTypes type;
     private final double price;
     private final int capacity;
 
-    public Room_typesDto(String description, double price, int capacity) {
-        this.description = description;
+    public RoomTypeDto(RoomTypes type, double price, int capacity) {
+        this.type = type;
         this.price = price;
         this.capacity = capacity;
     }
 
-    public String getDescription() {
-        return description;
+    public RoomTypes getType() {
+        return type;
     }
 
     public double getPrice() {
@@ -30,21 +30,21 @@ public class Room_typesDto {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Room_typesDto that = (Room_typesDto) o;
+        RoomTypeDto that = (RoomTypeDto) o;
         return Double.compare(that.price, price) == 0 &&
                 capacity == that.capacity &&
-                Objects.equals(description, that.description);
+                type == that.type;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(description, price, capacity);
+        return Objects.hash(type, price, capacity);
     }
 
     @Override
     public String toString() {
-        return "Room_typesDto{" +
-                "description='" + description + '\'' +
+        return "RoomTypeDto{" +
+                "type=" + type +
                 ", price=" + price +
                 ", capacity=" + capacity +
                 '}';
