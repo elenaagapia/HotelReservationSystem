@@ -18,17 +18,6 @@ import static wantsome.project.db.dto.RoomTypes.*;
  */
 public class DbInitService {
 
-    private static final String CREATE_RESERVATIONS_SQL = "CREATE TABLE IF NOT EXISTS RESERVATIONS ( " +
-            "ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
-            "CLIENT_ID INTEGER NOT NULL REFERENCES CLIENTS(ID), " +
-            "START_DATE DATETIME NOT NULL, " +
-            "END_DATE DATETIME NOT NULL, " +
-            "ROOM_NUMBER INTEGER NOT NULL, " +
-            "EXTRA_FACILITY TEXT REFERENCES EXTRA_FACILITIES(FACILITY)," +
-            "EXTRA_INFO TEXT, " +
-            "PAYMENT_METHOD TEXT CHECK(PAYMENT_METHOD IN ('" + CARD + "', '" + CASH + "'))" +
-            "CREATED_AT DATETIME NOT NULL " +
-            ");";
 
     private static final String CREATE_CLIENTS_SQL = "CREATE TABLE IF NOT EXISTS CLIENTS ( " +
             "ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -52,6 +41,18 @@ public class DbInitService {
     private static final String CREATE_EXTRA_FACILITIES_SQL = "CREATE TABLE IF NOT EXISTS EXTRA_FACILITIES ( " +
             "FACILITY TEXT CHECK (FACILITY IN ('" + PARKING_SPACE + "', '" + BREAKFAST + "', '" + SPA_MEMBERSHIP + "', '" + TRANSIT_TRANSPORTATION + "', '" + DAY_CARE + "'))) PRIMARY KEY, " +
             "PRICE DOUBLE NOT NULL" +
+            ");";
+
+    private static final String CREATE_RESERVATIONS_SQL = "CREATE TABLE IF NOT EXISTS RESERVATIONS ( " +
+            "ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            "CLIENT_ID INTEGER NOT NULL REFERENCES CLIENTS(ID), " +
+            "START_DATE DATETIME NOT NULL, " +
+            "END_DATE DATETIME NOT NULL, " +
+            "ROOM_NUMBER INTEGER NOT NULL, " +
+            "EXTRA_FACILITY TEXT REFERENCES EXTRA_FACILITIES(FACILITY)," +
+            "EXTRA_INFO TEXT, " +
+            "PAYMENT_METHOD TEXT CHECK(PAYMENT_METHOD IN ('" + CARD + "', '" + CASH + "'))" +
+            "CREATED_AT DATETIME NOT NULL " +
             ");";
 
     public static void createTablesAndInitialData() {

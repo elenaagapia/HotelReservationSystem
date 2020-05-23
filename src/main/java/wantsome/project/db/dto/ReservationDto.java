@@ -13,13 +13,13 @@ public class ReservationDto {
     private final Date endDate;
     private final long roomNumber;
     private final String extraInfo;
-    private final List<ExtraFacilityDto> extraFacilities;//lista de DTO
+    private final List<ExtraServices> extraFacilities;//TODO:lista de DTO sau de ENUM?? vreau sa-mi apara doar denumirea in lista de rezervari
     private final PaymentMethod payment;
     private final Date createdAt;
 
     //Constructor for when a particular reservation already exists and has a creation date and I don't want to replace the initial one
     public ReservationDto(long id, long clientId, Date startDate, Date endDate,
-                          long roomNumber, String extraInfo, List<ExtraFacilityDto> extraFacilities, PaymentMethod payment, Date createdAt) {
+                          long roomNumber, String extraInfo, List<ExtraServices> extraFacilities, PaymentMethod payment, Date createdAt) {
         this.id = id;
         this.clientId = clientId;
         this.startDate = startDate;
@@ -33,7 +33,7 @@ public class ReservationDto {
 
     //Constructor for when a new reservation is created and I want the accurate date without inserting it
     public ReservationDto(long id, long clientId, Date startDate, Date endDate,
-                          long roomNumber, String extraInfo, List<ExtraFacilityDto> extraFacilities, PaymentMethod payment) {
+                          long roomNumber, String extraInfo, List<ExtraServices> extraFacilities, PaymentMethod payment) {
         this(id, clientId, startDate, endDate, roomNumber, extraInfo, extraFacilities, payment, Date.valueOf(LocalDate.now()));
     }
 
@@ -62,7 +62,7 @@ public class ReservationDto {
         return extraInfo;
     }
 
-    public List<ExtraFacilityDto> getExtraFacilities() {
+    public List<ExtraServices> getExtraFacilities() {
 
         return extraFacilities;
     }

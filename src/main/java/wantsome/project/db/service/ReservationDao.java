@@ -1,6 +1,8 @@
 package wantsome.project.db.service;
 
 import wantsome.project.db.DbManager;
+import wantsome.project.db.dto.ExtraServices;
+import wantsome.project.db.dto.PaymentMethod;
 import wantsome.project.db.dto.ReservationDto;
 
 import java.sql.*;
@@ -64,8 +66,8 @@ public class ReservationDao {
             ps.setDate(3, reservation.getEndDate());
             ps.setLong(4, reservation.getRoomNumber());
             ps.setString(5, reservation.getExtraInfo());
-            ps.setString(6, reservation.getExtraFacilities());
-            ps.setString(7, reservation.getPayment());
+            ps.setString(6, reservation.getExtraFacilities().toString());//TODO CUM FAC PT LISTE?
+            ps.setString(7, reservation.getPayment().name());
             ps.setDate(8, reservation.getCreatedAt());
 
             ps.execute();
@@ -96,8 +98,8 @@ public class ReservationDao {
             ps.setDate(3, reservation.getEndDate());
             ps.setLong(4, reservation.getRoomNumber());
             ps.setString(5, reservation.getExtraInfo());
-            ps.setString(6, reservation.getExtraFacilities());
-            ps.setString(7, reservation.getPayment());
+            ps.setString(6, reservation.getExtraFacilities().toString());
+            ps.setString(7, reservation.getPayment().name());
             ps.setLong(8, reservation.getId());
 
             ps.executeUpdate();
@@ -129,10 +131,16 @@ public class ReservationDao {
         Date endDate = rs.getDate("END_DATE");
         long roomId = rs.getLong("ROOM_ID");
         String extraInfo = rs.getString("EXTRA_INFO");
-        String extraFacilities = rs.getString("EXTRA_FACILITY");
-        String paymentMethod = rs.getString("PAYMENT_METHOD");
+
+        List<ExtraServices> facilities = new ArrayList<>();
+        String[] services = rs.getString("EXTRA_FACILITY").split(","); //TODO: cum se face delimitarea in tabela daca sunt mai multe valori?
+        for (String facility : services) {
+            facilities.add(ExtraServices.valueOf(facility));
+        }
+
+        PaymentMethod paymentMethod = PaymentMethod.valueOf(rs.getString("PAYMENT_METHOD"));
         Date createdAt = rs.getDate("CREATED_AT");
 
-        return new ReservationDto(id, clientId, startDate, endDate, roomId, extraInfo, extraFacilities, paymentMethod, createdAt);
+        return new ReservationDto(id, clientId, startDate, endDate, roomId, extraInfo, facilities, paymentMethod, createdAt);
     }
 }
