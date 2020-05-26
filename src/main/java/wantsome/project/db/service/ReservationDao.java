@@ -6,6 +6,7 @@ import wantsome.project.db.dto.PaymentMethod;
 import wantsome.project.db.dto.ReservationDto;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -49,6 +50,100 @@ public class ReservationDao {
             e.printStackTrace();
         }
         return Optional.empty();
+    }
+
+    public List<ReservationDto> getActiveReservations() {
+
+        Date currentDate = Date.valueOf(LocalDate.now());
+        List<ReservationDto> reservations = new ArrayList<>();
+
+        String sql = "SELECT * FROM RESERVATIONS " +
+                "WHERE START_DATE >= ?";
+
+        try (Connection connection = DbManager.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setDate(1, currentDate);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    reservations.add(extractReservationsFromResult(rs));
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error loading reservations from today and further." + e.getMessage());
+        }
+        return reservations;
+    }
+
+    public List<ReservationDto> getInactiveReservations() {
+
+        Date currentDate = Date.valueOf(LocalDate.now());
+        List<ReservationDto> reservations = new ArrayList<>();
+
+        String sql = "SELECT * FROM RESERVATIONS " +
+                "WHERE END_DATE < ?";
+
+        try (Connection connection = DbManager.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setDate(1, currentDate);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    reservations.add(extractReservationsFromResult(rs));
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error loading inactive reservations." + e.getMessage());
+        }
+        return reservations;
+    }
+
+    public List<ReservationDto> getReservationsFromSpecificDate(Date date) {
+
+        String sql = "SELECT * FROM RESERVATIONS " +
+                "WHERE START_DATE <= ?" +
+                "AND END_DATE >= ? ";
+        List<ReservationDto> reservations = new ArrayList<>();
+
+
+        try (Connection connection = DbManager.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setDate(1, date);
+            ps.setDate(2, date);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    reservations.add(extractReservationsFromResult(rs));
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error loading reservations from date: " + e.getMessage());
+        }
+        return reservations;
+    }
+
+    //TODO: SA O TRATEZ MAI INCOLO...
+    public List<ReservationDto> reservationsOfClientFromDate(Date date, String name) throws SQLException {
+        List<ReservationDto> reservationsOfClient = new ArrayList<>();
+
+        String sql = "SELECT * FROM RESERVATIONS" +
+                "WHERE START_DATE >= ? " +
+                "AND END_DATE <= ? " +
+                "AND NAME = ?";
+
+        try (Connection connection = DbManager.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setDate(1, date);
+            ps.setDate(2, date);
+            ps.setString(3, name);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    reservationsOfClient.add(extractReservationsFromResult(rs));
+                }
+            }
+        }
+        return reservationsOfClient;
     }
 
     public void insert(ReservationDto reservation) {

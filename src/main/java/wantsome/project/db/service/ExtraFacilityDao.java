@@ -72,7 +72,7 @@ public class ExtraFacilityDao {
 
     }
 
-    public void update(ExtraFacilityDto facility) {
+    public void updatePrice(ExtraFacilityDto facility) {
         String sql = "UPDATE EXTRA_FACILITIES" +
                 "SET PRICE = ?" +
                 "WHERE FACILITY = ?";

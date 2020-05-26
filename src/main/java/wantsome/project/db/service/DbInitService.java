@@ -26,16 +26,17 @@ public class DbInitService {
             "ADDRESS TEXT NOT NULL" +
             ");";
 
-    private static final String CREATE_ROOMS_SQL = "CREATE TABLE IF NOT EXISTS ROOMS ( " +
-            "NUMBER INTEGER PRIMARY KEY AUTOINCREMENT, " +
-            "ROOM_TYPE_DESCRIPTION TEXT REFERENCES ROOM_TYPES(DESCRIPTION) " +
-            "EXTRA_INFO TEXT" +
-            ");";
 
     private static final String CREATE_ROOM_TYPES_SQL = "CREATE TABLE IF NOT EXISTS ROOM_TYPES ( " +
             "DESCRIPTION TEXT CHECK (DESCRIPTION IN ('" + SINGLE + "', '" + DOUBLE + "', '" + TWIN + "', '" + APARTMENT + "')) PRIMARY KEY , " +
             "PRICE DOUBLE NOT NULL," +
             "CAPACITY INTEGER NOT NULL" +
+            ");";
+
+    private static final String CREATE_ROOMS_SQL = "CREATE TABLE IF NOT EXISTS ROOMS ( " +
+            "NUMBER INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            "ROOM_TYPE_DESCRIPTION TEXT REFERENCES ROOM_TYPES(DESCRIPTION) " +
+            "EXTRA_INFO TEXT" +
             ");";
 
     private static final String CREATE_EXTRA_FACILITIES_SQL = "CREATE TABLE IF NOT EXISTS EXTRA_FACILITIES ( " +
