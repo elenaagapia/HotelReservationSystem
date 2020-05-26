@@ -11,10 +11,6 @@ import static wantsome.project.db.dto.PaymentMethod.CARD;
 
 public class SampleItems {
 
-     static List<ExtraFacilityDto> facilities = Arrays.asList(new ExtraFacilityDto(BREAKFAST, 20.0),
-            new ExtraFacilityDto(SPA_MEMBERSHIP, 30.0),
-            new ExtraFacilityDto(PARKING_SPACE,0.0));
-
      static final List<ClientDto> clients = Arrays.asList(
             new ClientDto(-1,"Andrei Vieriu", "andrei.aa@gmail.com", "Iasi, Sos. Nicolina"),
             new ClientDto(-1,"Bianca Nedelcu", "nedelcu.bianca@yahoo.com", "Bucuresti, str. Aeroportului"),
