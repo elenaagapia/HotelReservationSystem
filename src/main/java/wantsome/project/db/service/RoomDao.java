@@ -5,6 +5,7 @@ import wantsome.project.db.dto.RoomDto;
 import wantsome.project.db.dto.RoomTypes;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -32,13 +33,13 @@ public class RoomDao {
     }
 
 
-    public List<RoomDto> getAllAvailable(Date startDate, Date endDate) { // sau mai bine o perioada?
+    public List<RoomDto> getAllAvailable(Date startDate, Date endDate) {
 
         String sql = "SELECT R.NUMBER FROM ROOMS R" +
                 "LEFT OUTER JOIN RESERVATIONS RES" +
                 "ON R.NUMBER = RES.ROOM_NUMBER" +
-                "WHERE RES.START_DATE > ? " + //endDate + //ca sa ma asigur ca rezervarea noua e inaintea celei deja existente
-                "OR RES.END_DATE < ?";// + startDate; // ca sa ma asigur ca rezervarea noua se face dupa ce se termina cea veche
+                "WHERE RES.START_DATE > ? " + //ca sa ma asigur ca rezervarea noua e inaintea celei deja existente
+                "OR RES.END_DATE < ?"; // ca sa ma asigur ca rezervarea noua se face dupa ce se termina cea veche
 
         List<RoomDto> availableRooms = new ArrayList<>();
 
@@ -59,6 +60,84 @@ public class RoomDao {
 
 
         return availableRooms;
+    }
+
+    public List<RoomDto> getAllOfType(RoomTypes type) throws SQLException {
+        String sql = "SELECT NUMBER FROM ROOMS" +
+                "WHERE ROOM_TYPE_DESCRIPTION = ?";
+
+        List<RoomDto> roomsOfType = new ArrayList<>();
+
+        try (Connection connection = DbManager.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, type.name());
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    roomsOfType.add(extractRoomFromResult(rs));
+                }
+            }
+        }
+        return roomsOfType;
+    }
+
+    public List<RoomDto> getAllOccupiedInInterval(Date startDate, Date endDate) {
+
+        String sql = "SELECT R.NUMBER FROM ROOMS " +
+                "LEFT OUTER JOIN RESERVATIONS RES" +
+                "ON R.NUMBER = RES.ROOM_NUMBER" +
+                "WHERE RES.START_DATE < ?" +//END DATE
+                "OR RES.END_DATE > ?";//START_DATE
+        List<RoomDto> occupiedRooms = new ArrayList<>();
+
+        try (Connection con = DbManager.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setDate(1, endDate);
+            ps.setDate(2, startDate);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    occupiedRooms.add(extractRoomFromResult(rs));
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error loading occupied rooms: " + e.getMessage());
+        }
+
+
+        return occupiedRooms;
+
+    }
+
+    public List<RoomDto> getAllOccupiedToday() {
+
+        Date currentDate = Date.valueOf(LocalDate.now());
+
+        String sql = "SELECT R.NUMBER FROM ROOMS " +
+                "LEFT OUTER JOIN RESERVATIONS RES" +
+                "ON R.NUMBER = RES.ROOM_NUMBER" +
+                "WHERE RES.START_DATE < ?" +
+                "OR RES.END_DATE > ?";
+        List<RoomDto> occupiedToday = new ArrayList<>();
+
+        try (Connection con = DbManager.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setDate(1, currentDate);
+            ps.setDate(2, currentDate);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    occupiedToday.add(extractRoomFromResult(rs));
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error loading occupied rooms: " + e.getMessage());
+        }
+
+
+        return occupiedToday;
     }
 
     public Optional<RoomDto> get(long number) {

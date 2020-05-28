@@ -34,7 +34,7 @@ public class ClientDao {
         return clients;
     }
 
-    public Optional<ClientDto> get(long id) {
+    public Optional<ClientDto> getById(long id) {
         String sql = "SELECT * FROM CLIENTS WHERE ID = ?";
 
         try (Connection connection = DbManager.getConnection();
@@ -49,6 +49,25 @@ public class ClientDao {
             }
         } catch (SQLException e) {
             System.err.println("Error loading client with id:" + id + e.getMessage());
+        }
+        return Optional.empty();
+    }
+
+    public Optional<ClientDto> getByName(String name) {
+        String sql = "SELECT * FROM CLIENTS WHERE NAME = ?";
+
+        try (Connection connection = DbManager.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, name);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    ClientDto client = extractClientFromResult(rs);
+                    return Optional.of(client);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error loading client" + name + e.getMessage());
         }
         return Optional.empty();
     }

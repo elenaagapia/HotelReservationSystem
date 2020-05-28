@@ -6,17 +6,21 @@ import wantsome.project.db.dto.PaymentMethod;
 import wantsome.project.db.dto.ReservationDto;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ReservationDao {
+
     public List<ReservationDto> getAll() {
+        List<ReservationDto> reservations = new ArrayList<>();
+
         String sql = "SELECT * " +
                 "FROM RESERVATIONS " +
                 "ORDER BY START_DATE";
-
-        List<ReservationDto> reservations = new ArrayList<>();
 
         try (Connection conn = DbManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
@@ -33,6 +37,7 @@ public class ReservationDao {
     }
 
     public Optional<ReservationDto> get(long id) {
+
         String sql = "SELECT * FROM RESERVATIONS WHERE ID = ?";
 
         try (Connection connection = DbManager.getConnection();
@@ -51,6 +56,102 @@ public class ReservationDao {
         return Optional.empty();
     }
 
+    public List<ReservationDto> getActiveReservations() {
+
+        List<ReservationDto> reservations = new ArrayList<>();
+        Date currentDate = Date.valueOf(LocalDate.now());
+
+        String sql = "SELECT * FROM RESERVATIONS " +
+                "WHERE START_DATE >= ?";
+
+        try (Connection connection = DbManager.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setDate(1, currentDate);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    reservations.add(extractReservationsFromResult(rs));
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error loading reservations from today and further." + e.getMessage());
+        }
+        return reservations;
+    }
+
+    public List<ReservationDto> getInactiveReservations() {
+
+        Date currentDate = Date.valueOf(LocalDate.now());
+        List<ReservationDto> reservations = new ArrayList<>();
+
+        String sql = "SELECT * FROM RESERVATIONS " +
+                "WHERE END_DATE < ?";
+
+        try (Connection connection = DbManager.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setDate(1, currentDate);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    reservations.add(extractReservationsFromResult(rs));
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error loading inactive reservations." + e.getMessage());
+        }
+        return reservations;
+    }
+
+    public List<ReservationDto> getReservationsFromSpecificDate(Date date) {
+
+        List<ReservationDto> reservations = new ArrayList<>();
+
+        String sql = "SELECT * FROM RESERVATIONS " +
+                "WHERE START_DATE <= ?" +
+                "AND END_DATE >= ? ";
+
+
+        try (Connection connection = DbManager.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setDate(1, date);
+            ps.setDate(2, date);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    reservations.add(extractReservationsFromResult(rs));
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error loading reservations from date: " + e.getMessage());
+        }
+        return reservations;
+    }
+
+    //TODO: SA O TRATEZ MAI INCOLO...
+    public List<ReservationDto> reservationsOfClientFromDate(Date date, String name) throws SQLException {
+
+        List<ReservationDto> reservationsOfClient = new ArrayList<>();
+
+        String sql = "SELECT * FROM RESERVATIONS" +
+                "WHERE START_DATE >= ? " +
+                "AND END_DATE <= ? " +
+                "AND NAME = ?";
+
+        try (Connection connection = DbManager.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setDate(1, date);
+            ps.setDate(2, date);
+            ps.setString(3, name);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    reservationsOfClient.add(extractReservationsFromResult(rs));
+                }
+            }
+        }
+        return reservationsOfClient;
+    }
+
     public void insert(ReservationDto reservation) {
 
         String sql = "INSERT INTO RESERVATIONS " +
@@ -61,12 +162,17 @@ public class ReservationDao {
         try (Connection connection = DbManager.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
 
+            //stream joining for EXTRA_FACILITY field
+            String joinedEnumValues = Stream.of(reservation.getExtraFacilities())
+                    .map(String::valueOf)
+                    .collect(Collectors.joining(","));
+
             ps.setLong(1, reservation.getClientId());
             ps.setDate(2, reservation.getStartDate());
             ps.setDate(3, reservation.getEndDate());
             ps.setLong(4, reservation.getRoomNumber());
             ps.setString(5, reservation.getExtraInfo());
-            ps.setString(6, reservation.getExtraFacilities().toString());//TODO CUM FAC PT LISTE?
+            ps.setString(6, joinedEnumValues);
             ps.setString(7, reservation.getPayment().name());
             ps.setDate(8, reservation.getCreatedAt());
 
@@ -89,8 +195,14 @@ public class ReservationDao {
                 "PAYMENT_METHOD = ?" +
                 "WHERE ID = ?";
 
+
         try (Connection connection = DbManager.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
+
+            //stream joining for EXTRA_FACILITY field
+            String joinedEnumValues = Stream.of(reservation.getExtraFacilities())
+                    .map(String::valueOf)
+                    .collect(Collectors.joining(","));
 
             //data la crea a fost creata rezervarea nu se poate modifica
             ps.setLong(1, reservation.getClientId());
@@ -98,7 +210,7 @@ public class ReservationDao {
             ps.setDate(3, reservation.getEndDate());
             ps.setLong(4, reservation.getRoomNumber());
             ps.setString(5, reservation.getExtraInfo());
-            ps.setString(6, reservation.getExtraFacilities().toString());
+            ps.setString(6, joinedEnumValues);
             ps.setString(7, reservation.getPayment().name());
             ps.setLong(8, reservation.getId());
 
@@ -125,15 +237,17 @@ public class ReservationDao {
 
     private ReservationDto extractReservationsFromResult(ResultSet rs) throws SQLException {
 
+        List<ExtraServices> facilities = new ArrayList<>();
+
         long id = rs.getLong("ID");
         long clientId = rs.getLong("CLIENT_ID");
         Date startDate = rs.getDate("START_DATE");
         Date endDate = rs.getDate("END_DATE");
         long roomId = rs.getLong("ROOM_ID");
         String extraInfo = rs.getString("EXTRA_INFO");
+        String[] services = rs.getString("EXTRA_FACILITY").split(",");
 
-        List<ExtraServices> facilities = new ArrayList<>();
-        String[] services = rs.getString("EXTRA_FACILITY").split(","); //TODO: cum se face delimitarea in tabela daca sunt mai multe valori?
+        //transforming from String to ExtraServices
         for (String facility : services) {
             facilities.add(ExtraServices.valueOf(facility));
         }
