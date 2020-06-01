@@ -1,12 +1,17 @@
 package wantsome.project;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import wantsome.project.db.DbManager;
+import wantsome.project.db.dto.ClientDto;
+import wantsome.project.db.dto.ReservationDto;
+import wantsome.project.db.dto.RoomDto;
+import wantsome.project.db.dto.RoomTypeDto;
 import wantsome.project.db.service.*;
 
+import java.io.File;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 
@@ -18,45 +23,98 @@ public class MainTest {
     private static final ReservationDao reservationDao = new ReservationDao();
     private static final RoomDao roomDao = new RoomDao();
     private static final RoomTypeDao roomTypeDao = new RoomTypeDao();
-    private static final ExtraFacilityDao facilityDao = new ExtraFacilityDao();
-    private static SampleItems sample = new SampleItems();
-
-//    private static List<ExtraFacilityDto> facilitiesDto = Arrays.asList(new ExtraFacilityDto(BREAKFAST, 20.0),
-//            new ExtraFacilityDto(SPA_MEMBERSHIP, 30.0));
-//
-//    private static final List<ClientDto> clients = Arrays.asList(
-//            new ClientDto("Andrei Vieriu", "andrei.aa@gmail.com", "Iasi, Sos. Nicolina"),
-//            new ClientDto("Bianca Nedelcu", "nedelcu.bianca@yahoo.com", "Bucuresti, str. Aeroportului"),
-//            new ClientDto("Cristina Macovei", "criss.macovei@gmail.com", "Iasi, Blvd. Stefan cel Mare")
-//    );
-//    Date date = new Date(2020 - 10 - 10);
-//    private static final List<ReservationDto> reservations = Arrays.asList(new ReservationDto(-1, 1, Date.valueOf(String.valueOf(2020 - 4 - 20)), Date.valueOf(String.valueOf(2020 - 4 - 30)), 4,
-//                    "regular customer", facilitiesDto, CARD),
-//            new ReservationDto(-1, 2, Date.valueOf(String.valueOf(2020-6-15)),
-//                    Date.valueOf(String.valueOf(2020 - 6 - 22)), 7, "italian family",
-//                    Arrays.asList(new ExtraFacilityDto(DAY_CARE, 30.0),
-//                            new ExtraFacilityDto(TRANSIT_TRANSPORTATION, 15.0),
-//                            new ExtraFacilityDto(PARKING_SPACE, 5.0)),
-//                    CARD));
-
-
-    //TODO: add unit tests here as needed (or else delete this class)
-    @Test
-    public void testSomething() {
-        Assert.assertTrue(1 == 1);
-    }
-
 
     @BeforeClass
     public static void initDbBeforeAnyTests() {//TODO:RENAME
-        DbManager.setDbFile(TEST_FILE); //use a separate db for test, to avoid overwriting the real one
+        DbManager.setDbFile(TEST_FILE);
         DbInitService.createTablesAndInitialData();
     }
 
     @Before
-    public static void insertBeforeTest() {
+    public void insertBeforeTest() {
+        assertTrue(clientDao.getAll().isEmpty());
+        for (ClientDto client : SampleItems.clients) {
+            clientDao.insert(client);
+
+        }
+        assertTrue(roomTypeDao.getAll().isEmpty());
+        for (RoomTypeDto roomType : SampleItems.roomTypes) {
+            roomTypeDao.insert(roomType);
+
+        }
+
+        assertTrue(roomDao.getAll().isEmpty());
+        for (RoomDto room : SampleItems.rooms) {
+            roomDao.insert(room);
+
+        }
+        assertTrue(reservationDao.getAll().isEmpty());
+        for (ReservationDto reservation : SampleItems.reservations) {
+            reservationDao.insert(reservation);
+        }
+    }
+
+    @After
+    public void deleteRowsAfterTest() {
+        clientDao.getAll().forEach(dto -> clientDao.delete(dto.getId()));
         assertTrue(clientDao.getAll().isEmpty());
 
+        roomTypeDao.getAll().forEach(dto -> roomTypeDao.delete(dto.getType()));
+        assertTrue(roomTypeDao.getAll().isEmpty());
+
+        roomDao.getAll().forEach(dto -> roomDao.delete(dto.getNumber()));
+        assertTrue(roomDao.getAll().isEmpty());
+
+        reservationDao.getAll().forEach(dto -> reservationDao.delete(dto.getId()));
+        assertTrue(reservationDao.getAll().isEmpty());
+    }
+
+    @AfterClass
+    public static void deleteDbFileAfterAllTests() {
+
+        new File(TEST_FILE).delete();
+    }
+
+    @Test
+    public void getAll() {
+        checkOnlyTheSampleClientsArePresentInDb();
+    }
+
+    private void checkOnlyTheSampleClientsArePresentInDb() {
+        List<ClientDto> clientsFromDb = clientDao.getAll();
+        assertEquals(3, clientsFromDb.size());
+        assertEqualClientsExceptId(SampleItems.clients.get(0), clientsFromDb.get(0));
+        assertEqualClientsExceptId(SampleItems.clients.get(2), clientsFromDb.get(2));
+    }
+
+    private void assertEqualClientsExceptId(ClientDto client1, ClientDto client2) {
+        assertTrue("Client " + client1 + "should show the same informations as " + client2 + " except for the ID",
+                client1.getName().equals(client2.getName()) &&
+                        client1.getEmail().equals(client2.getEmail()) &&
+                        client1.getAddress().equals(client2.getEmail()));
+    }
+
+    private void assertEqualRooms(RoomDto room1, RoomDto room2) {
+        assertTrue("Room " + room1 + " should be equal with room " + room2,
+                room1.getNumber() == room2.getNumber() &&
+                        room1.getRoomType().equals(room2.getRoomType()) &&
+                        room1.getExtraInfo().equals(room2.getExtraInfo()));
+    }
+
+    private void assertEqualRoomTypes(RoomTypeDto roomType1, RoomTypeDto roomType2) {
+        assertTrue(roomType1.getType().equals(roomType2.getType()) &&
+                roomType1.getPrice() == roomType2.getPrice() &&
+                roomType1.getCapacity() == roomType2.getCapacity());
+    }
+
+    private void assertEqualsReservationsExceptId(ReservationDto reservation1, ReservationDto reservation2) {
+        assertTrue(reservation1.getClientId() == reservation2.getClientId() &&
+                reservation1.getStartDate().equals(reservation2.getStartDate()) &&
+                reservation1.getEndDate().equals(reservation2.getEndDate()) &&
+                reservation1.getRoomNumber() == reservation2.getRoomNumber() &&
+                reservation1.getExtraInfo().equals(reservation2.getExtraInfo()) &&
+                reservation1.getExtraFacilities().equals(reservation2.getExtraFacilities()) &&
+                reservation1.getPayment().equals(reservation2.getPayment()) &&
+                reservation1.getCreatedAt().equals(reservation2.getCreatedAt()));
     }
 }
-
