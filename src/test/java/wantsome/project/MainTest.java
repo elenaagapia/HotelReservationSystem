@@ -23,6 +23,7 @@ public class MainTest {
     private static final ReservationDao reservationDao = new ReservationDao();
     private static final RoomDao roomDao = new RoomDao();
     private static final RoomTypeDao roomTypeDao = new RoomTypeDao();
+    private static SampleItems sample = new SampleItems();
 
     @BeforeClass
     public static void initDbBeforeAnyTests() {//TODO:RENAME

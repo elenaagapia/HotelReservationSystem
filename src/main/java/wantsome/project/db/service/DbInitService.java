@@ -39,10 +39,6 @@ public class DbInitService {
             "EXTRA_INFO TEXT" +
             ");";
 
-    private static final String CREATE_EXTRA_FACILITIES_SQL = "CREATE TABLE IF NOT EXISTS EXTRA_FACILITIES ( " +
-            "FACILITY TEXT CHECK (FACILITY IN ('" + PARKING_SPACE + "', '" + BREAKFAST + "', '" + SPA_MEMBERSHIP + "', '" + TRANSIT_TRANSPORTATION + "', '" + DAY_CARE + "'))) PRIMARY KEY, " +
-            "PRICE DOUBLE NOT NULL" +
-            ");";
 
     private static final String CREATE_RESERVATIONS_SQL = "CREATE TABLE IF NOT EXISTS RESERVATIONS ( " +
             "ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -50,9 +46,10 @@ public class DbInitService {
             "START_DATE DATETIME NOT NULL, " +
             "END_DATE DATETIME NOT NULL, " +
             "ROOM_NUMBER INTEGER NOT NULL, " +
-            "EXTRA_FACILITY TEXT REFERENCES EXTRA_FACILITIES(FACILITY)," +
+            "EXTRA_FACILITY TEXT CHECK (EXTRA_FACILITY IN ('" + PARKING_SPACE + "', '" + BREAKFAST + "', '"
+            + SPA_MEMBERSHIP + "', '" + TRANSIT_TRANSPORTATION + "', '" + DAY_CARE + "'))" +
             "EXTRA_INFO TEXT, " +
-            "PAYMENT_METHOD TEXT CHECK(PAYMENT_METHOD IN ('" + CARD + "', '" + CASH + "'))" +
+            "PAYMENT_METHOD TEXT CHECK (PAYMENT_METHOD IN ('" + CARD + "', '" + CASH + "'))" +
             "CREATED_AT DATETIME NOT NULL " +
             ");";
 
@@ -68,7 +65,6 @@ public class DbInitService {
             st.execute(CREATE_CLIENTS_SQL);
             st.execute(CREATE_ROOMS_SQL);
             st.execute(CREATE_ROOM_TYPES_SQL);
-            st.execute(CREATE_EXTRA_FACILITIES_SQL);
 
         } catch (SQLException e) {
             System.err.println("Error creating missing tables: " + e.getMessage());

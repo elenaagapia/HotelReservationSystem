@@ -13,7 +13,7 @@ public class ReservationDto {
     private final Date endDate;
     private final long roomNumber;
     private final String extraInfo;
-    private final List<ExtraServices> extraFacilities;//TODO:lista de DTO sau de ENUM?? vreau sa-mi apara doar denumirea in lista de rezervari
+    private final List<ExtraServices> extraFacilities;
     private final PaymentMethod payment;
     private final Date createdAt;
 
@@ -105,8 +105,8 @@ public class ReservationDto {
                 ", endDate=" + endDate +
                 ", roomNumber=" + roomNumber +
                 ", extraInfo='" + extraInfo + '\'' +
-                ", extraFacilities=" + extraFacilities +
-                ", payment='" + payment + '\'' +
+                ", extraFacilities='" + extraFacilities + '\'' +
+                ", payment=" + payment +
                 ", createdAt=" + createdAt +
                 '}';
     }
