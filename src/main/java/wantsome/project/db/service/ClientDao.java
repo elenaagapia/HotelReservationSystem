@@ -15,8 +15,7 @@ public class ClientDao {
 
     public List<ClientDto> getAll() {
         String sql = "SELECT * " +
-                "FROM CLIENTS " +
-                "ORDER BY NAME";
+                "FROM CLIENTS; ";
 
         List<ClientDto> clients = new ArrayList<>();
 
@@ -35,7 +34,7 @@ public class ClientDao {
     }
 
     public Optional<ClientDto> getById(long id) {
-        String sql = "SELECT * FROM CLIENTS WHERE ID = ?";
+        String sql = "SELECT * FROM CLIENTS WHERE ID = ?;";
 
         try (Connection connection = DbManager.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -54,7 +53,7 @@ public class ClientDao {
     }
 
     public Optional<ClientDto> getByName(String name) {
-        String sql = "SELECT * FROM CLIENTS WHERE NAME = ?";
+        String sql = "SELECT * FROM CLIENTS WHERE NAME = ?;";
 
         try (Connection connection = DbManager.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -76,7 +75,7 @@ public class ClientDao {
 
         String sql = "INSERT INTO CLIENTS " +
                 "(NAME,EMAIL,ADDRESS)" +
-                "VALUES (?,?,?)";
+                "VALUES (?,?,?);";
 
         try (Connection connection = DbManager.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -98,7 +97,7 @@ public class ClientDao {
                 "SET NAME = ?, " +
                 "EMAIL = ?," +
                 "ADDRESS = ?" +
-                "WHERE ID = ?";
+                "WHERE ID = ?;";
 
         try (Connection connection = DbManager.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -116,12 +115,14 @@ public class ClientDao {
     }
 
     public void delete(long id) {
-        String sql = "DELETE FROM CLIENTS WHERE ID = ?";
+        String sql = "DELETE FROM CLIENTS WHERE ID = ?;";
 
         try (Connection connection = DbManager.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
 
             ps.setLong(1, id);
+            ps.execute();
+
         } catch (SQLException e) {
             System.err.println("Error while deleting client with id:  " + id + e.getMessage());
         }

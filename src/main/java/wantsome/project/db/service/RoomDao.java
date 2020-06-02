@@ -13,8 +13,7 @@ import java.util.Optional;
 public class RoomDao {
     public List<RoomDto> getAll() {
         String sql = "SELECT * " +
-                "FROM ROOMS " +
-                "ORDER BY NUMBER";
+                "FROM ROOMS; ";
 
         List<RoomDto> rooms = new ArrayList<>();
 
@@ -35,11 +34,11 @@ public class RoomDao {
 
     public List<RoomDto> getAllAvailable(Date startDate, Date endDate) {
 
-        String sql = "SELECT R.NUMBER FROM ROOMS R" +
+        String sql = "SELECT R.ROOM_NUMBER FROM ROOMS R" +
                 "LEFT OUTER JOIN RESERVATIONS RES" +
-                "ON R.NUMBER = RES.ROOM_NUMBER" +
+                "ON R.ROOM_NUMBER = RES.ROOM_NUMBER" +
                 "WHERE RES.START_DATE > ? " + //ca sa ma asigur ca rezervarea noua e inaintea celei deja existente
-                "OR RES.END_DATE < ?"; // ca sa ma asigur ca rezervarea noua se face dupa ce se termina cea veche
+                "OR RES.END_DATE < ?;"; // ca sa ma asigur ca rezervarea noua se face dupa ce se termina cea veche
 
         List<RoomDto> availableRooms = new ArrayList<>();
 
@@ -63,8 +62,8 @@ public class RoomDao {
     }
 
     public List<RoomDto> getAllOfType(RoomTypes type) throws SQLException {
-        String sql = "SELECT NUMBER FROM ROOMS" +
-                "WHERE ROOM_TYPE_DESCRIPTION = ?";
+        String sql = "SELECT ROOM_NUMBER FROM ROOMS" +
+                "WHERE ROOM_TYPE_DESCRIPTION = ?;";
 
         List<RoomDto> roomsOfType = new ArrayList<>();
 
@@ -83,11 +82,11 @@ public class RoomDao {
 
     public List<RoomDto> getAllOccupiedInInterval(Date startDate, Date endDate) {
 
-        String sql = "SELECT R.NUMBER FROM ROOMS " +
+        String sql = "SELECT R.ROOM_NUMBER FROM ROOMS " +
                 "LEFT OUTER JOIN RESERVATIONS RES" +
-                "ON R.NUMBER = RES.ROOM_NUMBER" +
+                "ON R.ROOM_NUMBER = RES.ROOM_NUMBER" +
                 "WHERE RES.START_DATE < ?" +//END DATE
-                "OR RES.END_DATE > ?";//START_DATE
+                "OR RES.END_DATE > ?;";//START_DATE
         List<RoomDto> occupiedRooms = new ArrayList<>();
 
         try (Connection con = DbManager.getConnection();
@@ -114,11 +113,11 @@ public class RoomDao {
 
         Date currentDate = Date.valueOf(LocalDate.now());
 
-        String sql = "SELECT R.NUMBER FROM ROOMS " +
+        String sql = "SELECT R.ROOM_NUMBER FROM ROOMS " +
                 "LEFT OUTER JOIN RESERVATIONS RES" +
-                "ON R.NUMBER = RES.ROOM_NUMBER" +
+                "ON R.ROOM_NUMBER = RES.ROOM_NUMBER" +
                 "WHERE RES.START_DATE < ?" +
-                "OR RES.END_DATE > ?";
+                "OR RES.END_DATE > ?;";
         List<RoomDto> occupiedToday = new ArrayList<>();
 
         try (Connection con = DbManager.getConnection();
@@ -141,7 +140,7 @@ public class RoomDao {
     }
 
     public Optional<RoomDto> get(long number) {
-        String sql = "SELECT * FROM ROOMS WHERE NUMBER = ?";
+        String sql = "SELECT * FROM ROOMS WHERE ROOM_NUMBER = ?;";
 
         try (Connection connection = DbManager.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -163,7 +162,7 @@ public class RoomDao {
 
         String sql = "INSERT INTO ROOMS " +
                 "(ROOM_TYPE_DESCRIPTION, EXTRA_INFO)" +
-                "VALUES (?,?)";
+                "VALUES (?,?);";
 
         try (Connection connection = DbManager.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -183,7 +182,7 @@ public class RoomDao {
         String sql = "UPDATE ROOMS" +
                 "SET ROOM_TYPE_DESCRIPTION = ?," +
                 "EXTRA_INFO = ?" +
-                "WHERE NUMBER = ?";
+                "WHERE ROOM_NUMBER = ?;";
 
         try (Connection connection = DbManager.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -200,12 +199,13 @@ public class RoomDao {
     }
 
     public void delete(long number) {
-        String sql = "DELETE FROM ROOMS WHERE NUMBER = ?";
+        String sql = "DELETE FROM ROOMS WHERE ROOM_NUMBER = ?;";
 
         try (Connection connection = DbManager.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
 
             ps.setLong(1, number);
+            ps.execute();
         } catch (SQLException e) {
             System.err.println("Error while deleting room with number:  " + number + e.getMessage());
         }
@@ -215,7 +215,7 @@ public class RoomDao {
 
     private RoomDto extractRoomFromResult(ResultSet rs) throws SQLException {
 
-        long number = rs.getLong("NUMBER");
+        long number = rs.getLong("ROOM_NUMBER");
         RoomTypes roomTypeDesc = RoomTypes.valueOf(rs.getString("ROOM_TYPE_DESCRIPTION"));
         String extraInfo = rs.getString("EXTRA_INFO");
 

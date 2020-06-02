@@ -15,8 +15,7 @@ import java.util.Optional;
 public class RoomTypeDao {
     public List<RoomTypeDto> getAll() {
         String sql = "SELECT * " +
-                "FROM ROOM_TYPES " +
-                "ORDER BY PRICE";
+                "FROM ROOM_TYPES;";
 
         List<RoomTypeDto> roomType = new ArrayList<>();
 
@@ -35,7 +34,7 @@ public class RoomTypeDao {
     }
 
     public Optional<RoomTypeDto> get(RoomTypes type) {
-        String sql = "SELECT * FROM ROOM_TYPES WHERE DESCRIPTION = ?";
+        String sql = "SELECT * FROM ROOM_TYPES WHERE DESCRIPTION = ?;";
 
         try (Connection connection = DbManager.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -57,7 +56,7 @@ public class RoomTypeDao {
 
         String sql = "INSERT INTO ROOM_TYPES " +
                 "(DESCRIPTION,PRICE,CAPACITY)" +
-                "VALUES (?,?,?)";
+                "VALUES (?,?,?);";
 
         try (Connection connection = DbManager.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -78,7 +77,7 @@ public class RoomTypeDao {
         String sql = "UPDATE ROOM_TYPES" +
                 "SET PRICE = ?," +
                 "CAPACITY = ?" +
-                "WHERE DESCRIPTION = ?";
+                "WHERE DESCRIPTION = ?;";
 
         try (Connection connection = DbManager.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -95,12 +94,13 @@ public class RoomTypeDao {
     }
 
     public void delete(RoomTypes type) {
-        String sql = "DELETE FROM ROOM_TYPES WHERE DESCRIPTION = ?";
+        String sql = "DELETE FROM ROOM_TYPES WHERE DESCRIPTION = ?;";
 
         try (Connection connection = DbManager.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
 
             ps.setString(1, type.name());
+            ps.execute();
         } catch (SQLException e) {
             System.err.println("Error while deleting room type:  " + type + e.getMessage());
         }
