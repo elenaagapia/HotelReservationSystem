@@ -6,7 +6,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import static wantsome.project.db.dto.ExtraServices.*;
 import static wantsome.project.db.dto.PaymentMethod.CARD;
 import static wantsome.project.db.dto.PaymentMethod.CASH;
 import static wantsome.project.db.dto.RoomTypes.*;
@@ -34,8 +33,8 @@ public class DbInitService {
             ");";
 
     private static final String CREATE_ROOMS_SQL = "CREATE TABLE IF NOT EXISTS ROOMS ( " +
-            "NUMBER INTEGER PRIMARY KEY AUTOINCREMENT, " +
-            "ROOM_TYPE_DESCRIPTION TEXT REFERENCES ROOM_TYPES(DESCRIPTION) " +
+            "ROOM_NUMBER INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            "ROOM_TYPE_DESCRIPTION TEXT REFERENCES ROOM_TYPES(DESCRIPTION), " +
             "EXTRA_INFO TEXT" +
             ");";
 
@@ -45,11 +44,11 @@ public class DbInitService {
             "CLIENT_ID INTEGER NOT NULL REFERENCES CLIENTS(ID), " +
             "START_DATE DATETIME NOT NULL, " +
             "END_DATE DATETIME NOT NULL, " +
-            "ROOM_NUMBER INTEGER NOT NULL, " +
-            "EXTRA_FACILITY TEXT CHECK (EXTRA_FACILITY IN ('" + PARKING_SPACE + "', '" + BREAKFAST + "', '"
-            + SPA_MEMBERSHIP + "', '" + TRANSIT_TRANSPORTATION + "', '" + DAY_CARE + "'))" +
+            "ROOM_NUMBER INTEGER NOT NULL REFERENCES ROOMS(ROOM_NUMBER), " +
+//            "EXTRA_FACILITY TEXT CHECK (EXTRA_FACILITY IN ('" + PARKING_SPACE + "', '" + BREAKFAST + "', '"
+//            + SPA_MEMBERSHIP + "', '" + TRANSIT_TRANSPORTATION + "', '" + DAY_CARE + "')) ," +
             "EXTRA_INFO TEXT, " +
-            "PAYMENT_METHOD TEXT CHECK (PAYMENT_METHOD IN ('" + CARD + "', '" + CASH + "'))" +
+            "PAYMENT_METHOD TEXT CHECK (PAYMENT_METHOD IN ('" + CARD + "', '" + CASH + "')) NOT NULL," +
             "CREATED_AT DATETIME NOT NULL " +
             ");";
 
