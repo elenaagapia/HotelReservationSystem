@@ -27,7 +27,7 @@ public class ClientDao {
                 clients.add(extractClientFromResult(rs));
             }
         } catch (SQLException e) {
-            System.err.println("Error loading all clients: " + e.getMessage());
+            throw new RuntimeException("Error loading all clients: " + e.getMessage());
         }
 
         return clients;
@@ -47,7 +47,7 @@ public class ClientDao {
                 }
             }
         } catch (SQLException e) {
-            System.err.println("Error loading client with id:" + id + e.getMessage());
+            throw new RuntimeException("Error loading client with id:" + id + e.getMessage());
         }
         return Optional.empty();
     }
@@ -66,7 +66,7 @@ public class ClientDao {
                 }
             }
         } catch (SQLException e) {
-            System.err.println("Error loading client" + name + e.getMessage());
+            throw new RuntimeException("Error loading client" + name + e.getMessage());
         }
         return Optional.empty();
     }
@@ -74,7 +74,7 @@ public class ClientDao {
     public void insert(ClientDto client) {
 
         String sql = "INSERT INTO CLIENTS " +
-                "(NAME,EMAIL,ADDRESS)" +
+                "(NAME,EMAIL,ADDRESS) " +
                 "VALUES (?,?,?);";
 
         try (Connection connection = DbManager.getConnection();
@@ -87,16 +87,16 @@ public class ClientDao {
             ps.execute();
 
         } catch (SQLException e) {
-            System.err.println("Error inserting client " + client.getName() + e.getMessage());
+            throw new RuntimeException("Error inserting client " + client.getName() + e.getMessage());
         }
 
     }
 
     public void update(ClientDto client) {
-        String sql = "UPDATE CLIENTS" +
+        String sql = "UPDATE CLIENTS " +
                 "SET NAME = ?, " +
-                "EMAIL = ?," +
-                "ADDRESS = ?" +
+                "EMAIL = ?, " +
+                "ADDRESS = ? " +
                 "WHERE ID = ?;";
 
         try (Connection connection = DbManager.getConnection();
@@ -110,7 +110,7 @@ public class ClientDao {
             ps.executeUpdate();
 
         } catch (SQLException e) {
-            System.err.println("Error while updating client " + client.getName() + e.getMessage());
+            throw new RuntimeException("Error while updating client " + client.getName() + e.getMessage());
         }
     }
 
@@ -124,7 +124,7 @@ public class ClientDao {
             ps.execute();
 
         } catch (SQLException e) {
-            System.err.println("Error while deleting client with id:  " + id + e.getMessage());
+            throw new RuntimeException("Error while deleting client with id:  " + id + e.getMessage());
         }
 
     }

@@ -34,9 +34,9 @@ public class RoomDao {
 
     public List<RoomDto> getAllAvailable(Date startDate, Date endDate) {
 
-        String sql = "SELECT R.ROOM_NUMBER FROM ROOMS R" +
-                "LEFT OUTER JOIN RESERVATIONS RES" +
-                "ON R.ROOM_NUMBER = RES.ROOM_NUMBER" +
+        String sql = "SELECT R.ROOM_NUMBER FROM ROOMS R " +
+                "JOIN RESERVATIONS RES " +
+                "ON R.ROOM_NUMBER = RES.ROOM_NUMBER " +
                 "WHERE RES.START_DATE > ? " + //ca sa ma asigur ca rezervarea noua e inaintea celei deja existente
                 "OR RES.END_DATE < ?;"; // ca sa ma asigur ca rezervarea noua se face dupa ce se termina cea veche
 
@@ -54,7 +54,7 @@ public class RoomDao {
                 }
             }
         } catch (SQLException e) {
-            System.err.println("Error loading available rooms: " + e.getMessage());
+            throw new RuntimeException("Error loading available rooms: " + e.getMessage());
         }
 
 
@@ -62,8 +62,8 @@ public class RoomDao {
     }
 
     public List<RoomDto> getAllOfType(RoomTypes type) throws SQLException {
-        String sql = "SELECT ROOM_NUMBER FROM ROOMS" +
-                "WHERE ROOM_TYPE_DESCRIPTION = ?;";
+        String sql = "SELECT ROOM_NUMBER FROM ROOMS " +
+                "WHERE ROOM_TYPE_DESCRIPTION = ?; ";
 
         List<RoomDto> roomsOfType = new ArrayList<>();
 
@@ -85,7 +85,7 @@ public class RoomDao {
         String sql = "SELECT R.ROOM_NUMBER FROM ROOMS " +
                 "LEFT OUTER JOIN RESERVATIONS RES" +
                 "ON R.ROOM_NUMBER = RES.ROOM_NUMBER" +
-                "WHERE RES.START_DATE < ?" +//END DATE
+                "WHERE RES.START_DATE < ? " +//END DATE
                 "OR RES.END_DATE > ?;";//START_DATE
         List<RoomDto> occupiedRooms = new ArrayList<>();
 
@@ -179,9 +179,9 @@ public class RoomDao {
     }
 
     public void update(RoomDto room) {
-        String sql = "UPDATE ROOMS" +
-                "SET ROOM_TYPE_DESCRIPTION = ?," +
-                "EXTRA_INFO = ?" +
+        String sql = "UPDATE ROOMS " +
+                "SET ROOM_TYPE_DESCRIPTION = ?, " +
+                "EXTRA_INFO = ? " +
                 "WHERE ROOM_NUMBER = ?;";
 
         try (Connection connection = DbManager.getConnection();

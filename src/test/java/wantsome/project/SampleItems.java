@@ -18,10 +18,9 @@ public class SampleItems {
 
     static final List<ReservationDto> reservations = Arrays.asList(
             new ReservationDto(-1, 1, new Date(baseTime), new Date(baseTime + 1000), 1,
-                    "regular customer", /*Arrays.asList(BREAKFAST),*/ CARD),
+                    "regular customer", CARD),
             new ReservationDto(-1, 2, new Date(baseTime + 2000),
                     new Date(baseTime + 3000), 4, "italian family",
-                    /*Arrays.asList(BREAKFAST, PARKING_SPACE, SPA_MEMBERSHIP),*/
                     CARD));
 
     static final List<RoomDto> rooms = Arrays.asList(

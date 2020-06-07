@@ -1,10 +1,15 @@
 package wantsome.project.db.service;
 
 import wantsome.project.db.DbManager;
+import wantsome.project.db.dto.RoomDto;
+import wantsome.project.db.dto.RoomTypeDto;
+import wantsome.project.db.dto.RoomTypes;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Arrays;
+import java.util.List;
 
 import static wantsome.project.db.dto.PaymentMethod.CARD;
 import static wantsome.project.db.dto.PaymentMethod.CASH;
@@ -45,8 +50,6 @@ public class DbInitService {
             "START_DATE DATETIME NOT NULL, " +
             "END_DATE DATETIME NOT NULL, " +
             "ROOM_NUMBER INTEGER NOT NULL REFERENCES ROOMS(ROOM_NUMBER), " +
-//            "EXTRA_FACILITY TEXT CHECK (EXTRA_FACILITY IN ('" + PARKING_SPACE + "', '" + BREAKFAST + "', '"
-//            + SPA_MEMBERSHIP + "', '" + TRANSIT_TRANSPORTATION + "', '" + DAY_CARE + "')) ," +
             "EXTRA_INFO TEXT, " +
             "PAYMENT_METHOD TEXT CHECK (PAYMENT_METHOD IN ('" + CARD + "', '" + CASH + "')) NOT NULL," +
             "CREATED_AT DATETIME NOT NULL " +
@@ -54,6 +57,49 @@ public class DbInitService {
 
     public static void createTablesAndInitialData() {
         createMissingTables();
+    }
+
+    public static void insertIntoRoomTypes() {
+        RoomTypeDao roomTypeDao = new RoomTypeDao();
+        List<RoomTypeDto> roomTypes = Arrays.asList(
+                new RoomTypeDto(RoomTypes.DOUBLE, 55.0, 2),
+                new RoomTypeDto(RoomTypes.TWIN, 50, 2),
+                new RoomTypeDto(RoomTypes.SINGLE, 30, 1),
+                new RoomTypeDto(RoomTypes.APARTMENT, 100, 4)
+        );
+        if (roomTypeDao.getAll().isEmpty()) {
+            for (RoomTypeDto roomType : roomTypes) {
+                roomTypeDao.insert(roomType);
+            }
+        }
+    }
+
+    public static void insertIntoRooms() {
+        RoomDao roomDao = new RoomDao();
+        List<RoomDto> rooms = Arrays.asList(
+                new RoomDto(-1, DOUBLE, "balcony access"),
+                new RoomDto(-1, TWIN, "balcony access"),
+                new RoomDto(-1, SINGLE, "parking lot view"),
+                new RoomDto(-1, APARTMENT, "with kitchen"),
+                new RoomDto(-1, DOUBLE, "matrimonial bed"),
+                new RoomDto(-1, TWIN, "balcony access"),
+                new RoomDto(-1, SINGLE, "near elevator"),
+                new RoomDto(-1, APARTMENT, "two bathrooms"),
+                new RoomDto(-1, DOUBLE, "sea view"),
+                new RoomDto(-1, TWIN, "air conditioner"),
+                new RoomDto(-1, SINGLE, "pets allowed"),
+                new RoomDto(-1, APARTMENT, "netflix subscription"),
+                new RoomDto(-1, DOUBLE, "king size bed"),
+                new RoomDto(-1, TWIN, "bunk beds"),
+                new RoomDto(-1, SINGLE, "parking lot view"),
+                new RoomDto(-1, APARTMENT, "sea view"));
+
+        if (roomDao.getAll().isEmpty()) {
+            for (RoomDto room : rooms) {
+                roomDao.insert(room);
+            }
+        }
+
     }
 
     private static void createMissingTables() {
@@ -64,6 +110,20 @@ public class DbInitService {
             st.execute(CREATE_CLIENTS_SQL);
             st.execute(CREATE_ROOMS_SQL);
             st.execute(CREATE_ROOM_TYPES_SQL);
+
+        } catch (SQLException e) {
+            System.err.println("Error creating missing tables: " + e.getMessage());
+        }
+    }
+
+    public static void deleteTables() {
+        try (Connection conn = DbManager.getConnection();
+             Statement st = conn.createStatement()) {
+
+            st.execute("DROP TABLE RESERVATIONS;");
+            st.execute("DROP TABLE CLIENTS;");
+            st.execute("DROP TABLE ROOMS;");
+            st.execute("DROP TABLE ROOM_TYPES;");
 
         } catch (SQLException e) {
             System.err.println("Error creating missing tables: " + e.getMessage());
