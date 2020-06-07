@@ -1,0 +1,51 @@
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="/common.css">
+    <link rel="stylesheet" type="text/css" href="/main.css">
+</head>
+
+
+<body>
+
+    <a href='/add_client'> Add new client </a>
+    <br><br>
+
+    <table>
+
+        <tr>
+            <th> Id </th>
+            <th> Name </th>
+            <th> Email </th>
+            <th> Address </th>
+        </tr>
+
+        #foreach($client in $clients)
+            <tr>
+                <td width=5% align=center>
+                 <a href='/update_client/$client.id'> $client.id </a>
+
+                </td>
+                <td width=15% align=center>
+                    $client.name
+                </td>
+                <td width=15% align=center>
+                    $client.email
+                </td>
+                <td width=20% align=center>
+                    $client.address
+                </td>
+                <td width=10% align=center>
+                    <a href='/delete_client/$client.id' onclick="return confirm('Are you sure you want to delete client with id $client.id ?')">
+                        Delete
+                    </a>
+                </td>
+            </tr>
+        #end
+
+    </table>
+
+    <br>
+    <a href='/main'> Back to reservations </a>
+
+</body>
+</html>
