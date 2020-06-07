@@ -1,0 +1,42 @@
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="/common.css">
+    <link rel="stylesheet" type="text/css" href="/main.css">
+</head>
+
+
+<body>
+    <br><br>
+
+    <table>
+
+        <tr>
+            <th> Type </th>
+            <th> Price </th>
+            <th> Capacity </th>
+        </tr>
+
+        #foreach($roomType in $roomTypes)
+            <tr>
+                <td width=5% align=center>
+                    $roomType.type
+
+                </td>
+                <td width=15% align=center>
+                    $roomType.price
+                </td>
+                <td width=15% align=center>
+                    $roomType.capacity
+                </td>
+            </tr>
+        #end
+
+    </table>
+
+    <br>
+    <a href='/main'> Back to reservations </a>
+    <br>
+    <a href='/add_room'> Back to add form </a>
+
+</body>
+</html>

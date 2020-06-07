@@ -1,16 +1,9 @@
 package wantsome.project;
 
-import com.google.gson.Gson;
-import spark.Request;
-import spark.Response;
-
-import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import wantsome.project.db.service.DbInitService;
+import wantsome.project.ui.web.*;
 
 import static spark.Spark.*;
-import static wantsome.project.ui.web.SparkUtil.render;
 
 /**
  * Main class of the application
@@ -24,29 +17,54 @@ public class Main {
 
     private static void setup() {
         //create and configure all needed resources (db tables, etc)
+        DbInitService.createTablesAndInitialData();
+        DbInitService.insertIntoRoomTypes();
+        DbInitService.insertIntoRooms();
     }
 
     private static void configureRoutesAndStart() {
         staticFileLocation("public");
 
-        //configure all routes
-        get("/main", (req, res) -> getMainWebPage(req, res));
-        get("/time", (req, res) -> getTimeRestResponse(req, res));
+        //---RESERVATIONS---//
+        get("/main", ReservationsPageController::showReservationsPage);
+
+        get("/add", AddEditReservationPageController::showAddForm);
+        post("/add", AddEditReservationPageController::handleAddUpdateRequest);
+
+        get("/update/:id", AddEditReservationPageController::showUpdateForm);
+        post("/update/:id", AddEditReservationPageController::handleAddUpdateRequest);
+
+        get("/delete/:id", ReservationsPageController::handleDeleteRequest);
+
+        //---CLIENTS---//
+        get("/clients", ClientsPageController::showClientsPage);
+
+        get("/add_client", AddEditClientsPageController::showAddForm);
+        post("/add_client", AddEditClientsPageController::handleAddUpdateRequest);
+
+        get("update_client/:id", AddEditClientsPageController::showUpdateForm);
+        post("update_client/:id", AddEditClientsPageController::handleAddUpdateRequest);
+
+        get("/delete_client/:id", ClientsPageController::handleDeleteRequest);
+
+        //---ROOMS---//
+
+        get("/rooms", RoomsPageController::showRoomsPage);
+
+        get("/add_room", AddEditRoomsPageController::showAddForm);
+        post("/add_room", AddEditRoomsPageController::handleAddUpdateRequest);
+
+        get("update_room/:number", AddEditRoomsPageController::showUpdateForm);
+        post("update_room/:number", AddEditRoomsPageController::handleAddUpdateRequest);
+
+        get("/delete_room/:number", RoomsPageController::handleDeleteRequest);
+
+        //---ROOM TYPES---//
+        get("/roomTypes", RoomTypesPageController::showRoomTypesPage);
 
         awaitInitialization();
-        System.out.println("\nServer started, url: http://localhost:4567/main, http://localhost:4567/time (use Ctrl+C to stop it)\n");
-    }
+        System.out.println("\nServer started, url: http://localhost:4567/main\n");
 
-    //example of returning a web page
-    private static Object getMainWebPage(Request req, Response res) {
-        Map<String, Object> model = new HashMap<>();
-        model.put("serverTime", new Date().toString());
-        return render(model, "main.vm");
-    }
-
-    //example of returning a JSON response for a REST service
-    private static Object getTimeRestResponse(Request req, Response res) {
-        res.type("application/json");
-        return new Gson().toJson(LocalDateTime.now());
+        exception(Exception.class, ErrorPageController::handleException);
     }
 }

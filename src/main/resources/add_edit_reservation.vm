@@ -1,0 +1,93 @@
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="/common.css">
+    <link rel="stylesheet" type="text/css" href="/add.css">
+</head>
+
+
+<body>
+
+    <br>
+
+    <h3 class='title'>
+        #if($isUpdate)
+            Update reservation
+        #else
+            Add new reservation
+        #end
+    </h3>
+
+
+    <!-- To display error/validation messages (if any was set from Java code)-->
+    <h4 class='error'> $errorMsg </h4>
+
+
+    <form method='post'>
+        <table>
+
+            <!-- row with Id is optional, show only for Update case (not Add, when it's not set anyway) -->
+            #if($isUpdate)
+            <tr>
+                <td> Id: </td>
+                <td> <input type='text' name='generatedId' value='$!prevId' readonly> </td>
+            </tr>
+            #end
+
+            <tr>
+                <td> Client: </td>
+                <td>
+                    <select name='clientId'>
+                        #foreach ($client in $clients)
+                            <option value='$client.id'  #if($prevClientId==$client.id) selected #end > $client.name </option>
+                        #end
+                    </select>
+                </td>
+            </tr>
+
+            <tr>
+                <td> Start date: </td>
+                <td> <input type='date' name='startDate' value='$prevStartDate' required> </td>
+            </tr>
+
+            <tr>
+                <td> End date: </td>
+                <td> <input type='date' name='endDate' value='$prevEndDate' required> </td>
+            </tr>
+
+            <tr>
+                <td> Room: </td>
+                <td> <input type='number' name='roomNumber' value='$!prevRoomNumber' min='1' max='16' required> </td>
+            </tr>
+
+            <tr>
+                <td> Extra Info (optional): </td>
+                <td> <input type='text' name='extraInfo' value='$prevExtraInfo'> </td>
+            </tr>
+
+
+            <tr>
+                <td> Payment Method: </td>
+                <td>
+                    <select name='paymentMethod'>
+                        <option value="CARD"   #if($prevPaymentMethod=='CARD')   selected #end > Card </option>
+                        <option value="CASH" #if($prevPaymentMethod=='CASH') selected #end > Cash </option>
+                    </select>
+                </td>
+            </tr>
+
+            #if($isUpdate)
+            <tr>
+                <td> Date of Reservation: </td>
+                <td> <input type='date' name='createdAt' value='$prevCreatedAt' readonly> </td>
+            </tr>
+            #end
+
+            <tr>
+                <td> <button onclick="location.href='/main'" type="button"> Cancel </button> </td>
+                <td> <input type='submit' value='#if($isUpdate) Update #{else} Add #end'> </td>
+            </tr>
+        </table>
+    </form>
+
+</body>
+</html>

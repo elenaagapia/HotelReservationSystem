@@ -26,7 +26,7 @@ public class ReservationDao {
                 reservations.add(extractReservationsFromResult(rs));
             }
         } catch (SQLException e) {
-            System.err.println("Error loading all reservations: " + e.getMessage());
+            throw new RuntimeException("Error loading all reservations: " + e.getMessage());
         }
 
         return reservations;
@@ -36,7 +36,7 @@ public class ReservationDao {
         List<ReservationDto> reservations = new ArrayList<>();
 
         String sql = "SELECT * " +
-                "FROM RESERVATIONS" +
+                "FROM RESERVATIONS " +
                 "ORDER BY START_DATE; ";
 
         try (Connection conn = DbManager.getConnection();
@@ -47,7 +47,7 @@ public class ReservationDao {
                 reservations.add(extractReservationsFromResult(rs));
             }
         } catch (SQLException e) {
-            System.err.println("Error loading all reservations: " + e.getMessage());
+            throw new RuntimeException("Error loading all reservations: " + e.getMessage());
         }
 
         return reservations;
@@ -59,6 +59,7 @@ public class ReservationDao {
 
         try (Connection connection = DbManager.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
+
             ps.setLong(1, id);
 
             try (ResultSet rs = ps.executeQuery()) {
@@ -66,11 +67,12 @@ public class ReservationDao {
                     ReservationDto reservation = extractReservationsFromResult(rs);
                     return Optional.of(reservation);
                 }
+                return Optional.empty();
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Error loading reservation " + id + ": " + e.getMessage());
         }
-        return Optional.empty();
+
     }
 
     public List<ReservationDto> getActiveReservationsOrderedByDate() {
@@ -79,7 +81,7 @@ public class ReservationDao {
         Date currentDate = Date.valueOf(LocalDate.now());
 
         String sql = "SELECT * FROM RESERVATIONS " +
-                "WHERE START_DATE >= ?" +
+                "WHERE START_DATE >= ? " +
                 "ORDER BY START_DATE;";
 
         try (Connection connection = DbManager.getConnection();
@@ -92,7 +94,7 @@ public class ReservationDao {
                 }
             }
         } catch (SQLException e) {
-            System.err.println("Error loading reservations from today and further." + e.getMessage());
+            throw new RuntimeException("Error loading reservations from today and further." + e.getMessage());
         }
         return reservations;
     }
@@ -103,7 +105,7 @@ public class ReservationDao {
         List<ReservationDto> reservations = new ArrayList<>();
 
         String sql = "SELECT * FROM RESERVATIONS " +
-                "WHERE END_DATE < ?" +
+                "WHERE END_DATE < ? " +
                 "ORDER BY START_DATE;";
 
         try (Connection connection = DbManager.getConnection();
@@ -116,7 +118,7 @@ public class ReservationDao {
                 }
             }
         } catch (SQLException e) {
-            System.err.println("Error loading inactive reservations." + e.getMessage());
+            throw new RuntimeException("Error loading inactive reservations." + e.getMessage());
         }
         return reservations;
     }
@@ -126,7 +128,7 @@ public class ReservationDao {
         List<ReservationDto> reservations = new ArrayList<>();
 
         String sql = "SELECT * FROM RESERVATIONS " +
-                "WHERE START_DATE <= ?" +
+                "WHERE START_DATE <= ? " +
                 "AND END_DATE >= ? ;";
 
 
@@ -141,17 +143,16 @@ public class ReservationDao {
                 }
             }
         } catch (SQLException e) {
-            System.err.println("Error loading reservations from date: " + e.getMessage());
+            throw new RuntimeException("Error loading reservations from date: " + e.getMessage());
         }
         return reservations;
     }
 
-    //TODO: SA O TRATEZ MAI INCOLO...
-    public List<ReservationDto> reservationsOfClientFromDate(Date date, String name) throws SQLException {
+    public List<ReservationDto> reservationsOfClientFromDate(Date date, String name) {
 
         List<ReservationDto> reservationsOfClient = new ArrayList<>();
 
-        String sql = "SELECT * FROM RESERVATIONS" +
+        String sql = "SELECT * FROM RESERVATIONS " +
                 "WHERE START_DATE >= ? " +
                 "AND END_DATE <= ? " +
                 "AND NAME = ?;";
@@ -167,6 +168,8 @@ public class ReservationDao {
                     reservationsOfClient.add(extractReservationsFromResult(rs));
                 }
             }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error loading reservations of client " + name + ", from date " + date);
         }
         return reservationsOfClient;
     }
@@ -174,31 +177,25 @@ public class ReservationDao {
     public void insert(ReservationDto reservation) {
 
         String sql = "INSERT INTO RESERVATIONS " +
-                "(CLIENT_ID,START_DATE,END_DATE,ROOM_NUMBER," +
-                "EXTRA_INFO, PAYMENT_METHOD, CREATED_AT)" +
-                "VALUES (?,?,?,?,?,?,?);";
+                "(CLIENT_ID, START_DATE, END_DATE, ROOM_NUMBER, " +
+                "EXTRA_INFO, PAYMENT_METHOD, CREATED_AT) " +
+                "VALUES (?,?,?,?,?,?,?)";
 
         try (Connection connection = DbManager.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
-
-            //stream joining for EXTRA_FACILITY field
-//            String joinedEnumValues = Stream.of(reservation.getExtraFacilities())
-//                    .map(String::valueOf)
-//                    .collect(Collectors.joining(","));
 
             ps.setLong(1, reservation.getClientId());
             ps.setDate(2, reservation.getStartDate());
             ps.setDate(3, reservation.getEndDate());
             ps.setLong(4, reservation.getRoomNumber());
             ps.setString(5, reservation.getExtraInfo());
-            //         ps.setString(6, joinedEnumValues);
             ps.setString(6, reservation.getPayment().name());
             ps.setDate(7, reservation.getCreatedAt());
 
             ps.execute();
 
         } catch (SQLException e) {
-            System.err.println("Error inserting reservation " + reservation + e.getMessage());
+            throw new RuntimeException("Error inserting reservation " + reservation + e.getMessage());
         }
 
     }
@@ -206,37 +203,31 @@ public class ReservationDao {
     public void update(ReservationDto reservation) {
         String sql = "UPDATE RESERVATIONS   " +
                 "SET CLIENT_ID = ?, " +
-                "START_DATE = ?," +
-                "END_DATE = ?," +
-                "ROOM_NUMBER = ?," +
-                "EXTRA_INFO = ?," +
-                //    "EXTRA_FACILITY = ?," +
-                "PAYMENT_METHOD = ?" +
+                "START_DATE = ?, " +
+                "END_DATE = ?, " +
+                "ROOM_NUMBER = ?, " +
+                "EXTRA_INFO = ?, " +
+                "PAYMENT_METHOD = ? " +
                 "WHERE ID = ?;";
 
 
         try (Connection connection = DbManager.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
 
-            //stream joining for EXTRA_FACILITY field
-//            String joinedEnumValues = Stream.of(reservation.getExtraFacilities())
-//                    .map(String::valueOf)
-//                    .collect(Collectors.joining(","));
 
-            //data la crea a fost creata rezervarea nu se poate modifica
+            //data la care a fost creata rezervarea nu se poate modifica
             ps.setLong(1, reservation.getClientId());
             ps.setDate(2, reservation.getStartDate());
             ps.setDate(3, reservation.getEndDate());
             ps.setLong(4, reservation.getRoomNumber());
             ps.setString(5, reservation.getExtraInfo());
-            //    ps.setString(6, joinedEnumValues);
             ps.setString(6, reservation.getPayment().name());
             ps.setLong(7, reservation.getId());
 
             ps.executeUpdate();
 
         } catch (SQLException e) {
-            System.err.println("Error while updating reservation " + reservation + e.getMessage());
+            throw new RuntimeException("Error while updating reservation " + reservation + e.getMessage());
         }
     }
 
@@ -249,7 +240,7 @@ public class ReservationDao {
             ps.setLong(1, id);
             ps.execute();
         } catch (SQLException e) {
-            System.err.println("Error while deleting reservation with id:  " + id + e.getMessage());
+            throw new RuntimeException("Error while deleting reservation with id:  " + id + e.getMessage());
         }
 
     }
@@ -257,24 +248,15 @@ public class ReservationDao {
 
     private ReservationDto extractReservationsFromResult(ResultSet rs) throws SQLException {
 
-        //     List<ExtraServices> facilities = new ArrayList<>();
-
         long id = rs.getLong("ID");
         long clientId = rs.getLong("CLIENT_ID");
         Date startDate = rs.getDate("START_DATE");
         Date endDate = rs.getDate("END_DATE");
         long roomId = rs.getLong("ROOM_NUMBER");
         String extraInfo = rs.getString("EXTRA_INFO");
-//        String[] services = rs.getString("EXTRA_FACILITY").split(",");
-//
-//        //transforming from String to ExtraServices
-//        for (String facility : services) {
-//            facilities.add(ExtraServices.valueOf(facility));
-//        }
-
         PaymentMethod paymentMethod = PaymentMethod.valueOf(rs.getString("PAYMENT_METHOD"));
         Date createdAt = rs.getDate("CREATED_AT");
 
-        return new ReservationDto(id, clientId, startDate, endDate, roomId, extraInfo,/* facilities,*/ paymentMethod, createdAt);
+        return new ReservationDto(id, clientId, startDate, endDate, roomId, extraInfo, paymentMethod, createdAt);
     }
 }

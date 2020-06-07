@@ -1,0 +1,100 @@
+<html>
+<head>
+    <!-- include some css files (taken from /public/.. folder) -->
+    <link rel="stylesheet" type="text/css" href="/common.css">
+    <link rel="stylesheet" type="text/css" href="/main.css">
+</head>
+
+
+<body>
+
+    <br><br>
+
+    <!-- first row above table, with some labels and links -->
+
+    Reservations: Current: <b> $activeCount </b> &nbsp;
+
+    Previous: <b> $oldReservationsCount </b>
+    #if($hidePastReservations)
+        (<a href='/main?hidePastReservations=false' title='Show previous'>hidden</a>)
+    #else
+        (<a href='/main?hidePastReservations=true' title='Hide previous'>shown</a>)
+    #end
+    &nbsp;
+
+
+    <!-- table of reservations -->
+
+    <a href='/add'> Add new reservation </a>
+    <br><br>
+
+    <table>
+
+        <!-- header row first -->
+        <tr>
+            <th> Id </th>
+            <th> Client Id </th>
+            <th> Start date </th>
+            <th> End Date </th>
+            <th> Room </th>
+            <th> Extra Info </th>
+            <th> Payment method </th>
+            <th> Date of Reservation </th>
+        </tr>
+
+        <!-- then for each reservation from model generate one regular table -->
+        #foreach($reservation in $reservations)
+            <tr>
+                <td width=5% align=center>
+                    <a href='/update/$reservation.id' title='Update'>
+                        $reservation.id
+                    </a>
+                </td>
+
+                <td width=5% align=center>
+                    $reservation.clientId
+                </td>
+
+                <td width=15% align=center>
+                    $reservation.startDate
+                </td>
+
+                <td width=15% align=center>
+                    $reservation.endDate
+                </td>
+
+                <td width=5% align=center>
+                    $reservation.roomNumber
+                </td>
+
+                <td width=30%>
+                    $!reservation.extraInfo
+                </td>
+
+                <td width=5% align=center>
+                    $reservation.paymentMethod
+                </td>
+
+                <td width=5% align=center>
+                    $reservation.createdAt
+                </td>
+
+                <td width=5% align=center>
+                    <a href='/delete/$reservation.id' onclick="return confirm('Are you sure you want to delete note with id $reservation.id ?')">
+                        Delete
+                    </a>
+                </td>
+            </tr>
+        #end
+
+    </table>
+
+    <br>
+    <a href='/clients'> View Clients </a>
+    <br>
+    <a href='/rooms'> View Rooms </a>
+
+    <br><br><br>
+
+</body>
+</html>

@@ -1,0 +1,12 @@
+body{
+    background-color: #faf4e8;
+    background-image: url('paper-background1.jpg');
+}
+
+.title {
+    color: #3333cc;
+}
+
+.error {
+    color: red;
+}

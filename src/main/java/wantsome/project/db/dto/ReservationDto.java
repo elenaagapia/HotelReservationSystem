@@ -12,28 +12,26 @@ public class ReservationDto {
     private final Date endDate;
     private final long roomNumber;
     private final String extraInfo;
-    //private final List<ExtraServices> extraFacilities;
     private final PaymentMethod payment;
     private final Date createdAt;
 
     //Constructor for when a particular reservation already exists and has a creation date and I don't want to replace the initial one
     public ReservationDto(long id, long clientId, Date startDate, Date endDate,
-                          long roomNumber, String extraInfo, /*List<ExtraServices> extraFacilities,*/ PaymentMethod payment, Date createdAt) {
+                          long roomNumber, String extraInfo, PaymentMethod payment, Date createdAt) {
         this.id = id;
         this.clientId = clientId;
         this.startDate = startDate;
         this.endDate = endDate;
         this.roomNumber = roomNumber;
         this.extraInfo = extraInfo;
-        // this.extraFacilities = extraFacilities;
         this.payment = payment;
         this.createdAt = createdAt;
     }
 
     //Constructor for when a new reservation is created and I want the accurate date without inserting it
     public ReservationDto(long id, long clientId, Date startDate, Date endDate,
-                          long roomNumber, String extraInfo, /*List<ExtraServices> extraFacilities,*/ PaymentMethod payment) {
-        this(id, clientId, startDate, endDate, roomNumber, extraInfo, /*extraFacilities,*/ payment, Date.valueOf(LocalDate.now()));
+                          long roomNumber, String extraInfo, PaymentMethod payment) {
+        this(id, clientId, startDate, endDate, roomNumber, extraInfo, payment, Date.valueOf(LocalDate.now()));
     }
 
 
@@ -61,11 +59,6 @@ public class ReservationDto {
         return extraInfo;
     }
 
-//    public List<ExtraServices> getExtraFacilities() {
-//
-//        return extraFacilities;
-//    }
-
     public PaymentMethod getPayment() {
         return payment;
     }
@@ -85,14 +78,13 @@ public class ReservationDto {
                 Objects.equals(startDate, that.startDate) &&
                 Objects.equals(endDate, that.endDate) &&
                 Objects.equals(extraInfo, that.extraInfo) &&
-                //  Objects.equals(extraFacilities, that.extraFacilities) &&
                 Objects.equals(payment, that.payment) &&
                 Objects.equals(createdAt, that.createdAt);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, clientId, startDate, endDate, roomNumber, extraInfo,/* extraFacilities,*/ payment, createdAt);
+        return Objects.hash(id, clientId, startDate, endDate, roomNumber, extraInfo, payment, createdAt);
     }
 
     @Override
@@ -104,7 +96,6 @@ public class ReservationDto {
                 ", endDate=" + endDate +
                 ", roomNumber=" + roomNumber +
                 ", extraInfo='" + extraInfo + '\'' +
-                //  ", extraFacilities='" + extraFacilities + '\'' +
                 ", payment=" + payment +
                 ", createdAt=" + createdAt +
                 '}';

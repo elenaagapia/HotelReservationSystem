@@ -22,13 +22,15 @@ public class MainTest {
     private static final RoomTypeDao roomTypeDao = new RoomTypeDao();
 
     @BeforeClass
-    public static void initDbBeforeAnyTests() {//TODO:RENAME
+    public static void initDbBeforeAnyTests() {
         DbManager.setDbFile(TEST_FILE);
-        DbInitService.createTablesAndInitialData();
+
     }
 
     @Before
     public void insertBeforeTest() {
+        DbInitService.createTablesAndInitialData();
+
         assertTrue(roomTypeDao.getAll().isEmpty());
         for (RoomTypeDto roomType : SampleItems.roomTypes) {
             roomTypeDao.insert(roomType);
@@ -52,17 +54,7 @@ public class MainTest {
 
     @After
     public void deleteRowsAfterTest() {
-        reservationDao.getAll().forEach(dto -> reservationDao.delete(dto.getId()));
-        assertTrue(reservationDao.getAll().isEmpty());
-
-        clientDao.getAll().forEach(dto -> clientDao.delete(dto.getId()));
-        assertTrue(clientDao.getAll().isEmpty());
-
-        roomDao.getAll().forEach(dto -> roomDao.delete(dto.getNumber()));
-        assertTrue(roomDao.getAll().isEmpty());
-
-        roomTypeDao.getAll().forEach(dto -> roomTypeDao.delete(dto.getType()));
-        assertTrue(roomTypeDao.getAll().isEmpty());
+        DbInitService.deleteTables();
     }
 
     @AfterClass
@@ -109,7 +101,6 @@ public class MainTest {
 
     private void assertEqualClientsExceptId(ClientDto client1, ClientDto client2) {
         assertTrue("Client " + client1 + "should show the same informations as " + client2 + " except for the ID",
-                //(client1.getId() == client2.getId() || client1.getId() != client2.getId()) &&
                 client1.getName().equals(client2.getName()) &&
                         client1.getEmail().equals(client2.getEmail()) &&
                         client1.getAddress().equals(client2.getAddress()));
@@ -133,7 +124,6 @@ public class MainTest {
                 reservation1.getEndDate().equals(reservation2.getEndDate()) &&
                 reservation1.getRoomNumber() == reservation2.getRoomNumber() &&
                 reservation1.getExtraInfo().equals(reservation2.getExtraInfo()) &&
-                //    reservation1.getExtraFacilities().equals(reservation2.getExtraFacilities()) &&
                 reservation1.getPayment().equals(reservation2.getPayment()) &&
                 reservation1.getCreatedAt().equals(reservation2.getCreatedAt()));
     }
