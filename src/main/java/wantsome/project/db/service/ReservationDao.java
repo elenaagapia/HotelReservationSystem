@@ -16,7 +16,7 @@ public class ReservationDao {
         List<ReservationDto> reservations = new ArrayList<>();
 
         String sql = "SELECT * " +
-                "FROM RESERVATIONS; ";
+                "FROM RESERVATIONS;";
 
         try (Connection conn = DbManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
@@ -53,6 +53,33 @@ public class ReservationDao {
         return reservations;
     }
 
+    public String getClientsName(ReservationDto reservation) {
+        String name = "";
+        long id = reservation.getId();
+        String sql = "SELECT NAME " +
+                "FROM RESERVATIONS " +
+                "LEFT JOIN CLIENTS ON CLIENT_ID = CLIENTS.ID " +
+                "WHERE RESERVATIONS.ID= ? ;";
+
+        try (Connection conn = DbManager.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setLong(1, id);
+
+            try (ResultSet rs = ps.executeQuery()) {
+
+                if (rs.next()) {
+                    name = rs.getString("NAME");
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error loading all names: " + e.getMessage());
+        }
+
+        return name;
+    }
+
+
     public Optional<ReservationDto> getById(long id) {
 
         String sql = "SELECT * FROM RESERVATIONS WHERE ID = ?;";
@@ -81,7 +108,7 @@ public class ReservationDao {
         Date currentDate = Date.valueOf(LocalDate.now());
 
         String sql = "SELECT * FROM RESERVATIONS " +
-                "WHERE START_DATE >= ? " +
+                "WHERE END_DATE >= ? " +
                 "ORDER BY START_DATE;";
 
         try (Connection connection = DbManager.getConnection();
@@ -244,7 +271,6 @@ public class ReservationDao {
         }
 
     }
-
 
     private ReservationDto extractReservationsFromResult(ResultSet rs) throws SQLException {
 

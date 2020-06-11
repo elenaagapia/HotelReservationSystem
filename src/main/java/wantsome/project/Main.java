@@ -35,6 +35,7 @@ public class Main {
         post("/update/:id", AddEditReservationPageController::handleAddUpdateRequest);
 
         get("/delete/:id", ReservationsPageController::handleDeleteRequest);
+        get("/invoice/:id", InvoicePageController::showInvoiceForReservation);
 
         //---CLIENTS---//
         get("/clients", ClientsPageController::showClientsPage);

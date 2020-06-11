@@ -20,19 +20,23 @@ public class ReservationsPageController {
         // hide past reservations
         boolean hidePastReservations = getHideOldReservationsFromParamOrSes(req);
 
-        List<ReservationDto> allReservations = reservationDao.getAll();
+        List<ReservationDto> allReservations = reservationDao.getAllOrderedByStartDate();
         List<ReservationDto> activeReservations = reservationDao.getActiveReservationsOrderedByDate();
         long activeCount = activeReservations.stream().count();
         long oldReservationsCount = allReservations.size() - activeCount;
-
         Map<String, Object> model = new HashMap<>();
+
         if (hidePastReservations) {
             model.put("reservations", activeReservations);
-        } else
+        } else {
             model.put("reservations", allReservations);
+        }
+
         model.put("activeCount", activeCount);
         model.put("oldReservationsCount", oldReservationsCount);
         model.put("hidePastReservations", hidePastReservations);
+
+
         return render(model, "reservations.vm");
     }
 
@@ -56,5 +60,6 @@ public class ReservationsPageController {
         res.redirect("/main");
         return res;
     }
+
 
 }

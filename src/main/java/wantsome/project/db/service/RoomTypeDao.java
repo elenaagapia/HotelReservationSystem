@@ -52,6 +52,7 @@ public class RoomTypeDao {
         return Optional.empty();
     }
 
+
     public void insert(RoomTypeDto roomType) {
 
         String sql = "INSERT INTO ROOM_TYPES " +

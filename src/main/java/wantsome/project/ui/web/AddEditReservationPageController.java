@@ -9,6 +9,7 @@ import wantsome.project.db.service.ClientDao;
 import wantsome.project.db.service.ReservationDao;
 
 import java.sql.Date;
+import java.time.LocalDate;
 import java.util.*;
 
 import static wantsome.project.ui.web.SparkUtil.render;
@@ -50,6 +51,7 @@ public class AddEditReservationPageController {
                                               String paymentMethod, String createdAt, String errorMessage) {
         Map<String, Object> model = new HashMap<>();
         List<ClientDto> clients = clientDao.getAll();
+        LocalDate todayDate = LocalDate.now();
 
         model.put("prevId", id);
         model.put("prevClientId", clientId);
@@ -62,8 +64,9 @@ public class AddEditReservationPageController {
         model.put("errorMsg", errorMessage);
         model.put("isUpdate", id != null && !id.isEmpty());
         model.put("clients", clients);
+        model.put("todayDate", todayDate);
 
-        return render(model, "add_edit_reservation.vm");
+        return render(model, "addform.vm");
     }
 
     public static Object handleAddUpdateRequest(Request req, Response res) {
@@ -115,8 +118,8 @@ public class AddEditReservationPageController {
                     "', must be a date in format: yyyy-[m]m-[d]d");
         }
 
-        if (endDate == null || endDate.isEmpty()) {
-            throw new RuntimeException("End date is required!");
+        if (endDate == null || endDate.isEmpty() || endDate.compareTo(startDate) <= 0) {
+            throw new RuntimeException("End date is required and should be after the start date!");
         }
         Date endDateValue;
         try {

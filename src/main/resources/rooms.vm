@@ -8,10 +8,7 @@
 <body>
 
     <a href='/add_room'> Add new room </a>
-    <br><br>
-
     <table>
-
         <tr>
             <th> Number </th>
             <th> Room Type </th>
@@ -43,8 +40,6 @@
         #end
 
     </table>
-
-    <br>
     <a href='/main'> Back to reservations </a>
     <br>
     <td> <button onclick="location.href='/main'" type="button"> Back </button> </td>

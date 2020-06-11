@@ -3,7 +3,10 @@ table, th, td {
 }
 
 table {
-    background color: blue;
+    background-color: #fafafa;
+        margin: 100px;
+        box-shadow: rgba(0, 0, 0, .1);
+        display: grid;
     border-collapse: collapse;
     width: 90%;
     margin: 100px;

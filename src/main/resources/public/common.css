@@ -1,12 +1,15 @@
-body{
-    background-color: #faf4e8;
-    background-image: url('paper-background1.jpg');
-}
+    body{
+        background-color: #faf4e8;
+        background-image: url('new.jpg');
+    }
 
-.title {
-    color: #3333cc;
-}
+    .title {
+         color: grey;
+    }
 
-.error {
-    color: red;
-}
+    .error {
+        font-size: 25px;
+        color: red;
+        text-align: center;
+
+    }

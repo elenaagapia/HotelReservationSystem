@@ -1,0 +1,63 @@
+body{
+    font-family: 'Raleway', sans-serif;
+    font-weight: 400;
+        color: #fff;
+        letter-spacing; 1px;
+
+    }
+
+    .container{
+        background-color: #fafafa;
+        margin: 200px;
+        box-shadow: rgba(0, 0, 0, .1);
+        display: grid;
+        grid-template-columns: 50% 50%;
+    }
+
+    .container-left {
+        background-color: rgba(0, 0, 0, .95);
+        padding: 50px;
+        outline: 3px dashed #998100;
+        outline-offset: -30px;
+        text-align: center;
+
+    }
+    .heading {
+        font-size: 35px;
+        text-transform:uppercase;
+    }
+    .container-form{
+        padding: 20px 0;
+        margin: 0 auto;
+        color: #000;
+    }
+
+    form{
+        display:grid;
+        grid-row-gap: 20px;
+    }
+    .form-field{
+        display: flex;
+        justify-content: space-between;
+    }
+
+    input,select{
+        pad:10px 15px
+    }
+
+    .buttons{
+        background-color: rgba(0, 0, 0, .95);
+        color: #fff;
+        padding: 10px 20px;
+        border: none;
+        font-size: 18px;
+        border-radius: 100px;
+        -webkit-border-radius: 100px;
+        -moz-border-radius: 100px;
+        -ms-border-radius: 100px;
+        -o-border-radius: 100px;
+        box-shadow: 7px 10px 12px rgba(0, 0, 0, .1);
+    }
+
+    btn:hover{
+    }
