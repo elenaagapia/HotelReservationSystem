@@ -6,8 +6,11 @@
 
 
 <body>
-    <br><br>
-
+  <ul>
+      <li><a href="/main">Reservations</a></li>
+      <li><a href="/rooms">Rooms</a></li>
+      <li><a href="/clients">Clients</a></li>
+  </ul>
     <table>
 
         <tr>
@@ -23,20 +26,14 @@
 
                 </td>
                 <td width=15% align=center>
-                    $roomType.price
+                    $roomType.price $
                 </td>
                 <td width=15% align=center>
-                    $roomType.capacity
+                    $roomType.capacity persons
                 </td>
             </tr>
         #end
 
     </table>
-
-    <br>
-    <a href='/main'> Back to reservations </a>
-    <br>
-    <a href='/add_room'> Back to add form </a>
-
 </body>
 </html>

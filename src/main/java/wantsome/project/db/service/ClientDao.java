@@ -87,7 +87,7 @@ public class ClientDao {
             ps.execute();
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error inserting client " + client.getName() + e.getMessage());
+            throw new RuntimeException("Error inserting client " + client.getName() + ". It may already exist. ");
         }
 
     }

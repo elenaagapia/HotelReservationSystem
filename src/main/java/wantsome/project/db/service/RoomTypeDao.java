@@ -27,7 +27,7 @@ public class RoomTypeDao {
                 roomType.add(extractRoomTypeFromResult(rs));
             }
         } catch (SQLException e) {
-            System.err.println("Error loading all room types: " + e.getMessage());
+            throw new RuntimeException("Error loading all room types: " + e.getMessage());
         }
 
         return roomType;
@@ -47,7 +47,7 @@ public class RoomTypeDao {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e.getMessage());
         }
         return Optional.empty();
     }

@@ -1,34 +1,48 @@
 <html>
 <head>
+    <link rel="stylesheet" type="text/css" href="/add_form.css">
     <link rel="stylesheet" type="text/css" href="/common.css">
-    <link rel="stylesheet" type="text/css" href="/add.css">
+
+    <style>
+    input[type=submit], a {
+        background-color: black;
+                border: none;
+                color: white;
+                width: 250px;
+                font-size: 18px;
+                text-decoration: none;
+                display: inline-block;
+      }</style>
 </head>
 
 
 <body>
-
     <br>
+    <h4 class='error'> $errorMsg </h4>
 
-    <h3 class='title'>
+<div class='container-others'>
+        <div class='container-form-add'>
+             <h3 class='title'>
         #if($isUpdate)
             Update room
         #else
             Add new room
         #end
-    </h3>
+            </h3>
 
-    <h4 class='error'> $errorMsg </h4>
 
-    <form method='post'>
-        <table>
+            <form action='#' method='post'>
 
+         <div class='form-field'>
             #if($isUpdate)
             <tr>
                 <td> Number: </td>
                 <td> <input type='text' name='number' value='$!prevNumber' readonly> </td>
             </tr>
                 #end
+        </div>
 
+        <div class='form-field'>
             <tr>
                 <td> Room Type: </td>
                 <td>
@@ -39,17 +53,27 @@
                          <option value="APARTMENT"    #if($prevPriority=='APARTMENT')    selected #end > Apartment </option>
                  </select>
             </tr>
+        </div>
 
+        <div class='form-field'>
             <tr>
-                <td> Extra Information: </td>
+                <td> Extra Information:</td>
                 <td> <input type='text' name='extraInfo' value='$prevExtraInfo' > </td>
             </tr>
+        </div>
 
+        <div class='buttons'>
             <tr>
-                <td> <button onclick="location.href='/rooms'" type="button"> Cancel </button> </td>
+                <td> <a href='/rooms' class='button'> Cancel </a> </td>
+            </tr>
+        </div>
+
+         <div class='buttons'>
+         <tr>
                 <td> <input type='submit' value='#if($isUpdate) Update #{else} Add #end'> </td>
             </tr>
-        </table>
+             </div>
+        </container-form>
     </form>
 
 </body>
