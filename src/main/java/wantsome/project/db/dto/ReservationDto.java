@@ -7,7 +7,7 @@ import java.util.Objects;
 public class ReservationDto {
 
     private final long id;
-    private final long clientId;
+    private final String clientName;
     private final Date startDate;
     private final Date endDate;
     private final long roomNumber;
@@ -16,10 +16,10 @@ public class ReservationDto {
     private final Date createdAt;
 
     //Constructor for when a particular reservation already exists and has a creation date and I don't want to replace the initial one
-    public ReservationDto(long id, long clientId, Date startDate, Date endDate,
+    public ReservationDto(long id, String clientName, Date startDate, Date endDate,
                           long roomNumber, String extraInfo, PaymentMethod payment, Date createdAt) {
         this.id = id;
-        this.clientId = clientId;
+        this.clientName = clientName;
         this.startDate = startDate;
         this.endDate = endDate;
         this.roomNumber = roomNumber;
@@ -29,9 +29,9 @@ public class ReservationDto {
     }
 
     //Constructor for when a new reservation is created and I want the accurate date without inserting it
-    public ReservationDto(long id, long clientId, Date startDate, Date endDate,
+    public ReservationDto(long id, String clientName, Date startDate, Date endDate,
                           long roomNumber, String extraInfo, PaymentMethod payment) {
-        this(id, clientId, startDate, endDate, roomNumber, extraInfo, payment, Date.valueOf(LocalDate.now()));
+        this(id, clientName, startDate, endDate, roomNumber, extraInfo, payment, Date.valueOf(LocalDate.now()));
     }
 
 
@@ -39,8 +39,8 @@ public class ReservationDto {
         return id;
     }
 
-    public long getClientId() {
-        return clientId;
+    public String getClientName() {
+        return clientName;
     }
 
     public Date getStartDate() {
@@ -73,7 +73,7 @@ public class ReservationDto {
         if (o == null || getClass() != o.getClass()) return false;
         ReservationDto that = (ReservationDto) o;
         return id == that.id &&
-                clientId == that.clientId &&
+                Objects.equals(clientName, that.clientName) &&
                 roomNumber == that.roomNumber &&
                 Objects.equals(startDate, that.startDate) &&
                 Objects.equals(endDate, that.endDate) &&
@@ -84,14 +84,14 @@ public class ReservationDto {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, clientId, startDate, endDate, roomNumber, extraInfo, payment, createdAt);
+        return Objects.hash(id, clientName, startDate, endDate, roomNumber, extraInfo, payment, createdAt);
     }
 
     @Override
     public String toString() {
         return "ReservationDto{" +
                 "id=" + id +
-                ", clientId=" + clientId +
+                ", clientName=" + clientName +
                 ", startDate=" + startDate +
                 ", endDate=" + endDate +
                 ", roomNumber=" + roomNumber +

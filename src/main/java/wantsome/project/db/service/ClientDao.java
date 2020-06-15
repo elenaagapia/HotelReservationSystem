@@ -74,8 +74,8 @@ public class ClientDao {
     public void insert(ClientDto client) {
 
         String sql = "INSERT INTO CLIENTS " +
-                "(NAME,EMAIL,ADDRESS) " +
-                "VALUES (?,?,?);";
+                "(ID,NAME,EMAIL,ADDRESS) " +
+                "VALUES ((SELECT MAX(ID) + 1 FROM CLIENTS),?,?,?);";
 
         try (Connection connection = DbManager.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -87,17 +87,17 @@ public class ClientDao {
             ps.execute();
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error inserting client " + client.getName() + ". It may already exist. ");
+            throw new RuntimeException("Error inserting client " + client.getName() + ". This name or email address already exists. ");
         }
 
     }
 
     public void update(ClientDto client) {
-        String sql = "UPDATE CLIENTS " +
+        String sql = "UPDATE CLIENTS" +
                 "SET NAME = ?, " +
-                "EMAIL = ?, " +
-                "ADDRESS = ? " +
-                "WHERE ID = ?;";
+                "EMAIL = ?," +
+                "ADDRESS = ?" +
+                "WHERE ID = ?";
 
         try (Connection connection = DbManager.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -110,21 +110,19 @@ public class ClientDao {
             ps.executeUpdate();
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error while updating client " + client.getName() + e.getMessage());
+            System.err.println("Error while updating client " + client.getName() + e.getMessage());
         }
     }
 
     public void delete(long id) {
-        String sql = "DELETE FROM CLIENTS WHERE ID = ?;";
+        String sql = "DELETE FROM CLIENTS WHERE ID = ?";
 
         try (Connection connection = DbManager.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
 
             ps.setLong(1, id);
-            ps.execute();
-
         } catch (SQLException e) {
-            throw new RuntimeException("Error while deleting client with id:  " + id + e.getMessage());
+            System.err.println("Error while deleting client with id:  " + id + e.getMessage());
         }
 
     }

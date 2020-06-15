@@ -12,15 +12,13 @@
                 font-size: 18px;
                 text-decoration: none;
                 display: inline-block;
+                font-family: inherit;
       }</style>
 </head>
-
-
 <body>
-    <br>
-    <h4 class='error'> $errorMsg </h4>
+    <br><h4 class='error'> $errorMsg </h4>
 
-<div class='container-others'>
+    <div class='container-others'>
         <div class='container-form-add'>
              <h3 class='title'>
         #if($isUpdate)
@@ -30,49 +28,37 @@
         #end
             </h3>
 
-
-            <form action='#' method='post'>
+    <form action='#' method='post'>
 
          <div class='form-field'>
             #if($isUpdate)
-            <tr>
-                <td> Number: </td>
-                <td> <input type='text' name='number' value='$!prevNumber' readonly> </td>
-            </tr>
-                #end
+               Number:
+              <input type='text' name='number' value='$!prevNumber' readonly>
+            #end
         </div>
 
         <div class='form-field'>
-            <tr>
-                <td> Room Type: </td>
-                <td>
+                Room Type:
                 <select name='roomType'>
                          <option value="DOUBLE"   #if($prevPriority=='DOUBLE')   selected #end > Double </option>
                          <option value="SINGLE" #if($prevPriority=='SINGLE') selected #end > Single </option>
                          <option value="TWIN"    #if($prevPriority=='TWIN')    selected #end > Twin </option>
                          <option value="APARTMENT"    #if($prevPriority=='APARTMENT')    selected #end > Apartment </option>
-                 </select>
-            </tr>
+                </select>
         </div>
 
         <div class='form-field'>
-            <tr>
-                <td> Extra Information:</td>
-                <td> <input type='text' name='extraInfo' value='$prevExtraInfo' > </td>
-            </tr>
+                Extra Information:
+                <input type='text' name='extraInfo' value='$prevExtraInfo'>
         </div>
 
         <div class='buttons'>
-            <tr>
-                <td> <a href='/rooms' class='button'> Cancel </a> </td>
-            </tr>
+                <a href='/rooms' class='button'> Cancel </a>
         </div>
 
-         <div class='buttons'>
-         <tr>
-                <td> <input type='submit' value='#if($isUpdate) Update #{else} Add #end'> </td>
-            </tr>
-             </div>
+        <div class='buttons'>
+                <input type='submit' value='#if($isUpdate) Update #{else} Add #end'>
+        </div>
         </container-form>
     </form>
 

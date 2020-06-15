@@ -12,14 +12,12 @@
                  font-size: 18px;
                  text-decoration: none;
                  display: inline-block;
+                 font-family: inherit;
       }</style>
 
 </head>
-
-
 <body>
-    <br>
-    <h4 class='error'> $errorMsg </h4>
+    <br><h4 class='error'> $errorMsg </h4>
 
 <div class='container-others'>
         <div class='container-form-add'>
@@ -31,50 +29,38 @@
         #end
              </h3>
 
-
 <form action='#' method='post'>
 
          <div class='form-field'>
 
             #if($isUpdate)
-            <tr>
-                <td> Id: </td>
-                <td> <input type='text' name='id' value='$!prevId' readonly> </td>
-            </tr>
-                #end
+               Id:
+               <input type='text' name='id' value='$prevId' readonly>
+            #end
         </div>
 
         <div class='form-field'>
-            <tr>
-                <td> Name: </td>
-                <td> <input type='text' name='name' value='$prevName' required> </td>
-            </tr>
+               Name:
+               <input type='text' name='name' value='$prevName' required>
         </div>
 
         <div class='form-field'>
-            <tr>
-                <td> Email: </td>
-                <td> <input type='text' name='email' value='$prevEmail' required> </td>
-            </tr>
+                Email:
+                <input type='text' name='email' value='$prevEmail' required>
         </div>
 
         <div class='form-field'>
-            <tr>
-                <td> Address: </td>
-                <td> <input type='text' name='address' value='$prevAddress' required> </td>
-            </tr>
+                Address:
+                <input type='text' name='address' value='$prevAddress' required>
         </div>
 
         <div class='buttons'>
-            <tr>
-                <td> <a href='/clients' class='button' > Cancel </a> </td>
+                <a href='/clients' class='button' > Cancel </a>
         </div>
-             </tr>
+
         <div class='buttons'>
-            <tr>
-                <td> <input type='submit' value='#if($isUpdate) Update #{else} Add #end'> </td>
-            </tr>
-             </div>
+                <input type='submit' value='#if($isUpdate) Update #{else} Add #end'>
+        </div>
         </container-form>
     </form>
 

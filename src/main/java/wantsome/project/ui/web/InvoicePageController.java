@@ -33,7 +33,7 @@ public class InvoicePageController {
             Optional<ReservationDto> optReservation = reservationDao.getById(Integer.parseInt(reservationId));
             if (optReservation.isPresent()) {
                 ReservationDto reservation = optReservation.get();
-                String clientName = reservationDao.getClientsName(reservation);
+                String clientName = reservation.getClientName();
                 RoomTypes roomType = roomDao.get(reservation.getRoomNumber()).get().getRoomType();
                 double price = roomTypeDao.get(roomType).get().getPrice();
 

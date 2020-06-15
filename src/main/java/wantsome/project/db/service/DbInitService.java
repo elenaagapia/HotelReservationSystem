@@ -1,6 +1,7 @@
 package wantsome.project.db.service;
 
 import wantsome.project.db.DbManager;
+import wantsome.project.db.dto.ClientDto;
 import wantsome.project.db.dto.RoomDto;
 import wantsome.project.db.dto.RoomTypeDto;
 import wantsome.project.db.dto.RoomTypes;
@@ -24,8 +25,8 @@ public class DbInitService {
 
 
     private static final String CREATE_CLIENTS_SQL = "CREATE TABLE IF NOT EXISTS CLIENTS ( " +
-            "ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
-            "NAME TEXT NOT NULL UNIQUE, " +
+            "ID INTEGER NOT NULL, " +
+            "NAME TEXT PRIMARY KEY, " +
             "EMAIL TEXT NOT NULL UNIQUE," +
             "ADDRESS TEXT NOT NULL" +
             ");";
@@ -46,7 +47,7 @@ public class DbInitService {
 
     private static final String CREATE_RESERVATIONS_SQL = "CREATE TABLE IF NOT EXISTS RESERVATIONS ( " +
             "ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
-            "CLIENT_ID INTEGER NOT NULL REFERENCES CLIENTS(ID), " +
+            "CLIENT_NAME TEXT NOT NULL REFERENCES CLIENTS(NAME), " +
             "START_DATE DATETIME NOT NULL, " +
             "END_DATE DATETIME NOT NULL, " +
             "ROOM_NUMBER INTEGER NOT NULL REFERENCES ROOMS(ROOM_NUMBER), " +
@@ -71,6 +72,13 @@ public class DbInitService {
             for (RoomTypeDto roomType : roomTypes) {
                 roomTypeDao.insert(roomType);
             }
+        }
+    }
+
+    public static void insertIntoClients() {
+        ClientDao clientDao = new ClientDao();
+        if (clientDao.getAll().isEmpty()) {
+            clientDao.insert(new ClientDto(1, "Pal Anca", "ancapal12@gmail.com", "Pascani, jud. Iasi"));
         }
     }
 

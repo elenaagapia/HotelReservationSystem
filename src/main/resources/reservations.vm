@@ -2,10 +2,9 @@
 <head>
     <!-- include some css files (taken from /public/.. folder) -->
     <link rel="stylesheet" type="text/css" href="/common.css">
-    <link rel="stylesheet" type="text/css" href="/main.css">
+    <link rel="stylesheet" type="text/css" href="/tables.css">
 
 </head>
-
 
 <body>
 
@@ -58,7 +57,7 @@
                 </td>
 
                 <td width=10% align=center>
-                    $reservation.clientId
+                    $reservation.clientName
                 </td>
 
                 <td width=10% align=center>

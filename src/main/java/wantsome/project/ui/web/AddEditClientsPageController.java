@@ -52,6 +52,7 @@ public class AddEditClientsPageController {
         String email = req.queryParams("email");
         String address = req.queryParams("address");
 
+        boolean isUpdateCase = id != null && !id.isEmpty();
         try {
             ClientDto client = validateAndInsertClient(id, name, email, address);
 

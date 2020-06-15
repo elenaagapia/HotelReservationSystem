@@ -204,14 +204,14 @@ public class ReservationDao {
     public void insert(ReservationDto reservation) {
 
         String sql = "INSERT INTO RESERVATIONS " +
-                "(CLIENT_ID, START_DATE, END_DATE, ROOM_NUMBER, " +
+                "(CLIENT_NAME, START_DATE, END_DATE, ROOM_NUMBER, " +
                 "EXTRA_INFO, PAYMENT_METHOD, CREATED_AT) " +
                 "VALUES (?,?,?,?,?,?,?)";
 
         try (Connection connection = DbManager.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
 
-            ps.setLong(1, reservation.getClientId());
+            ps.setString(1, reservation.getClientName());
             ps.setDate(2, reservation.getStartDate());
             ps.setDate(3, reservation.getEndDate());
             ps.setLong(4, reservation.getRoomNumber());
@@ -229,7 +229,7 @@ public class ReservationDao {
 
     public void update(ReservationDto reservation) {
         String sql = "UPDATE RESERVATIONS   " +
-                "SET CLIENT_ID = ?, " +
+                "SET CLIENT_NAME = ?, " +
                 "START_DATE = ?, " +
                 "END_DATE = ?, " +
                 "ROOM_NUMBER = ?, " +
@@ -243,7 +243,7 @@ public class ReservationDao {
 
 
             //data la care a fost creata rezervarea nu se poate modifica
-            ps.setLong(1, reservation.getClientId());
+            ps.setString(1, reservation.getClientName());
             ps.setDate(2, reservation.getStartDate());
             ps.setDate(3, reservation.getEndDate());
             ps.setLong(4, reservation.getRoomNumber());
@@ -275,7 +275,7 @@ public class ReservationDao {
     private ReservationDto extractReservationsFromResult(ResultSet rs) throws SQLException {
 
         long id = rs.getLong("ID");
-        long clientId = rs.getLong("CLIENT_ID");
+        String clientName = rs.getString("CLIENT_NAME");
         Date startDate = rs.getDate("START_DATE");
         Date endDate = rs.getDate("END_DATE");
         long roomId = rs.getLong("ROOM_NUMBER");
@@ -283,6 +283,6 @@ public class ReservationDao {
         PaymentMethod paymentMethod = PaymentMethod.valueOf(rs.getString("PAYMENT_METHOD"));
         Date createdAt = rs.getDate("CREATED_AT");
 
-        return new ReservationDto(id, clientId, startDate, endDate, roomId, extraInfo, paymentMethod, createdAt);
+        return new ReservationDto(id, clientName, startDate, endDate, roomId, extraInfo, paymentMethod, createdAt);
     }
 }

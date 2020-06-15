@@ -33,7 +33,7 @@ public class AddEditReservationPageController {
                 ReservationDto reservation = optReservation.get();
                 return renderAddUpdateForm(
                         String.valueOf(reservation.getId()),
-                        String.valueOf(reservation.getClientId()),
+                        reservation.getClientName(),
                         reservation.getStartDate().toString(),
                         reservation.getEndDate().toString(),
                         String.valueOf(reservation.getRoomNumber()),
@@ -49,7 +49,7 @@ public class AddEditReservationPageController {
         return "Error: reservation " + id + " not found!";
     }
 
-    private static String renderAddUpdateForm(String id, String clientId, String startDate,
+    private static String renderAddUpdateForm(String id, String clientName, String startDate,
                                               String endDate, String roomNumber, String extraInfo,
                                               String paymentMethod, String createdAt, String roomType, String errorMessage) {
         Map<String, Object> model = new HashMap<>();
@@ -58,7 +58,7 @@ public class AddEditReservationPageController {
         LocalDate todayDate = LocalDate.now();
 
         model.put("prevId", id);
-        model.put("prevClientId", clientId);
+        model.put("prevClientName", clientName);
         model.put("prevStartDate", startDate);
         model.put("prevEndDate", endDate);
         model.put("prevRoomType", roomType);
@@ -88,7 +88,7 @@ public class AddEditReservationPageController {
     public static Object handleAddUpdateRequest(Request req, Response res) {
         //read form values (posted as params)
         String id = req.queryParams("generatedId");
-        String clientId = req.queryParams("clientId");
+        String clientName = req.queryParams("clientName");
         String startDate = req.queryParams("startDate");
         String endDate = req.queryParams("endDate");
         String roomType = req.queryParams("roomType");
@@ -98,20 +98,20 @@ public class AddEditReservationPageController {
         String createdAt = req.queryParams("createdAt");
 
 
-//        String serverAction = req.queryParams("serverAction");
-//        if (serverAction.equals("refresh")) {
-//
-//            return renderAddUpdateForm(id, clientId, startDate, endDate, roomNumber, extraInfo, paymentMethod, createdAt, roomType, "");
-//        }
-        return tryPerformAddUpdateAction(res, id, clientId, startDate, endDate, roomNumber, extraInfo, paymentMethod, createdAt, roomType);
+        String serverAction = req.queryParams("serverAction");
+        if (serverAction.equals("refresh")) {
+
+            return renderAddUpdateForm(id, clientName, startDate, endDate, roomNumber, extraInfo, paymentMethod, createdAt, roomType, "");
+        }
+        return tryPerformAddUpdateAction(res, id, clientName, startDate, endDate, roomNumber, extraInfo, paymentMethod, createdAt, roomType);
     }
 
-    private static Object tryPerformAddUpdateAction(Response res, String id, String clientId, String startDate,
+    private static Object tryPerformAddUpdateAction(Response res, String id, String clientName, String startDate,
                                                     String endDate, String roomNumber, String extraInfo, String paymentMethod, String createdAt, String roomType) {
         boolean isUpdateCase = id != null && !id.isEmpty();
 
         try {
-            ReservationDto reservation = validateAndBuildReservation(id, clientId, startDate, endDate, roomNumber, extraInfo, paymentMethod);
+            ReservationDto reservation = validateAndBuildReservation(id, clientName, startDate, endDate, roomNumber, extraInfo, paymentMethod);
 
             if (isUpdateCase) {
                 reservationDao.update(reservation);
@@ -123,16 +123,14 @@ public class AddEditReservationPageController {
             return res;
 
         } catch (Exception e) {
-            return renderAddUpdateForm(id, clientId, startDate, endDate, roomNumber, extraInfo, paymentMethod, createdAt, roomType, e.getMessage());
+            return renderAddUpdateForm(id, clientName, startDate, endDate, roomNumber, extraInfo, paymentMethod, createdAt, roomType, e.getMessage());
         }
     }
 
-    private static ReservationDto validateAndBuildReservation(String id, String clientId, String startDate,
+    private static ReservationDto validateAndBuildReservation(String id, String clientName, String startDate,
                                                               String endDate, String roomNumber, String extraInfo, String paymentMethod) {
 
         long idValue = id != null && !id.isEmpty() ? Long.parseLong(id) : -1;
-
-        long clientIdValue = Long.parseLong(clientId);
 
         if (startDate == null || startDate.isEmpty()) {
             throw new RuntimeException("Start date is required!");
@@ -178,7 +176,7 @@ public class AddEditReservationPageController {
         }
 
 
-        return new ReservationDto(idValue, clientIdValue, startDateValue, endDateValue, roomNumberValue, extraInfo, paymentValue);
+        return new ReservationDto(idValue, clientName, startDateValue, endDateValue, roomNumberValue, extraInfo, paymentValue);
     }
 
 }
