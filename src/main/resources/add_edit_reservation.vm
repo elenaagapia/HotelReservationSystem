@@ -47,9 +47,9 @@
 
          <div class='form-field'>
                 Client:
-                    <select name='clientName'>
+                   <select name='clientId'>
                         #foreach ($client in $clients)
-                            <option value='$client.name'  #if($prevClientName==$client.name) selected #end > $client.name </option>
+                              <option value='$client.id'  #if($prevClientId==$client.id) selected #end > $client.name </option>
                         #end
                     </select>
          </div>

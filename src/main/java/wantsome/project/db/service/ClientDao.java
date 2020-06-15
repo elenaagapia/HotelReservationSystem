@@ -74,8 +74,8 @@ public class ClientDao {
     public void insert(ClientDto client) {
 
         String sql = "INSERT INTO CLIENTS " +
-                "(ID,NAME,EMAIL,ADDRESS) " +
-                "VALUES ((SELECT MAX(ID) + 1 FROM CLIENTS),?,?,?);";
+                "(NAME,EMAIL,ADDRESS) " +
+                "VALUES (?,?,?);";
 
         try (Connection connection = DbManager.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -87,13 +87,13 @@ public class ClientDao {
             ps.execute();
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error inserting client " + client.getName() + ". This name or email address already exists. ");
+            throw new RuntimeException("Error inserting client " + client.getName() + ". This name or email address may already exist. ", e);
         }
 
     }
 
     public void update(ClientDto client) {
-        String sql = "UPDATE CLIENTS" +
+        String sql = "UPDATE CLIENTS " +
                 "SET NAME = ?, " +
                 "EMAIL = ?," +
                 "ADDRESS = ?" +

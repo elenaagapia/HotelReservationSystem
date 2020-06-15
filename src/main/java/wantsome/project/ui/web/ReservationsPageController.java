@@ -2,7 +2,7 @@ package wantsome.project.ui.web;
 
 import spark.Request;
 import spark.Response;
-import wantsome.project.db.dto.ReservationDto;
+import wantsome.project.db.dto.FullReservationDto;
 import wantsome.project.db.service.ReservationDao;
 
 import java.util.HashMap;
@@ -20,8 +20,8 @@ public class ReservationsPageController {
         // hide past reservations
         boolean hidePastReservations = getHideOldReservationsFromParamOrSes(req);
 
-        List<ReservationDto> allReservations = reservationDao.getAllOrderedByStartDate();
-        List<ReservationDto> activeReservations = reservationDao.getActiveReservationsOrderedByDate();
+        List<FullReservationDto> allReservations = reservationDao.getAllOrderedByStartDate();
+        List<FullReservationDto> activeReservations = reservationDao.getActiveReservationsOrderedByDate();
         long activeCount = activeReservations.stream().count();
         long oldReservationsCount = allReservations.size() - activeCount;
         Map<String, Object> model = new HashMap<>();

@@ -19,7 +19,6 @@ public class Main {
         //create and configure all needed resources (db tables, etc)
         DbInitService.createTablesAndInitialData();
         DbInitService.insertIntoRoomTypes();
-        DbInitService.insertIntoClients();
         DbInitService.insertIntoRooms();
 
     }
