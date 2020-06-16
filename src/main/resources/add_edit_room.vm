@@ -53,11 +53,11 @@
         </div>
 
         <div class='buttons'>
-                <a href='/rooms' class='button'> Cancel </a>
+                <input type='submit' value='#if($isUpdate) Update #{else} Add #end'>
         </div>
 
         <div class='buttons'>
-                <input type='submit' value='#if($isUpdate) Update #{else} Add #end'>
+                <a href='/rooms' class='button'> Cancel </a>
         </div>
         </container-form>
     </form>

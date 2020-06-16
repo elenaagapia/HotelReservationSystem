@@ -55,7 +55,7 @@ public class ReservationsPageController {
         try {
             reservationDao.delete(Long.parseLong(id));
         } catch (Exception e) {
-            System.out.println("Error deleting reservation with id '" + id + "': " + e.getMessage());
+            throw new RuntimeException("Error deleting reservation with id '" + id + "': " + e.getMessage());
         }
         res.redirect("/main");
         return res;

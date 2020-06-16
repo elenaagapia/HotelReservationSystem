@@ -2,7 +2,10 @@ package wantsome.project.ui.web;
 
 import spark.Request;
 import spark.Response;
-import wantsome.project.db.dto.*;
+import wantsome.project.db.dto.ClientDto;
+import wantsome.project.db.dto.PaymentMethod;
+import wantsome.project.db.dto.ReservationDto;
+import wantsome.project.db.dto.RoomDto;
 import wantsome.project.db.service.ClientDao;
 import wantsome.project.db.service.ReservationDao;
 import wantsome.project.db.service.RoomDao;
@@ -64,7 +67,7 @@ public class AddEditReservationPageController {
 
 //to show only the room numbers of a specific type
         if (roomType != null & !roomType.isEmpty()) {
-            List<RoomDto> roomsOfType = roomDao.getAllOfType(RoomTypes.valueOf(roomType));
+            List<RoomDto> roomsOfType = roomDao.getAllAvailableOfType(String.valueOf(roomType), Date.valueOf(endDate), Date.valueOf(startDate));
             model.put("roomsOfType", roomsOfType);
         } else {
             model.put("roomsOfType", roomDao.getAll());

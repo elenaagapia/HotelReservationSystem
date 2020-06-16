@@ -111,11 +111,11 @@
          </div>
 
          <div class='buttons'>
-                <a href='/main'> Cancel </a>
+               <input type='submit' id='submitBtn' value='#if($isUpdate) Update #{else} Add #end'>
          </div>
 
          <div class='buttons'>
-               <input type='submit' id='submitBtn' value='#if($isUpdate) Update #{else} Add #end'>
+                <a href='/main'> Cancel </a>
          </div>
 
         <!-- hidden form field, not displayed on UI, but sent to server; here set by a JavaScript action, on refresh case, see dueDate input above -->

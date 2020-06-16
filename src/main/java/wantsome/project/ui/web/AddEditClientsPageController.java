@@ -28,7 +28,7 @@ public class AddEditClientsPageController {
                 return renderAddUpdateForm(String.valueOf(client.getId()), client.getName(), client.getEmail(), client.getAddress(), "");
             }
         } catch (Exception e) {
-            System.err.println("Error loading client with id: " + id + ": " + e.getMessage());
+            throw new RuntimeException("Error loading client with id: " + id + ": " + e.getMessage());
         }
         return "Error: client with id:  " + id + " not found!";
     }

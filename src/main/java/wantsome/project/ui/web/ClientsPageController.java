@@ -27,7 +27,7 @@ public class ClientsPageController {
         try {
             clientsDao.delete(Long.parseLong(id));
         } catch (Exception e) {
-            System.out.println("Error deleting client with id '" + id + "':" + e.getMessage());
+            throw new RuntimeException("Error deleting client with id '" + id + "':" + e.getMessage());
         }
         res.redirect("/clients");
         return res;

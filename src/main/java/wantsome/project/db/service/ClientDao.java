@@ -110,7 +110,7 @@ public class ClientDao {
             ps.executeUpdate();
 
         } catch (SQLException e) {
-            System.err.println("Error while updating client " + client.getName() + e.getMessage());
+            throw new RuntimeException("Error while updating client " + client.getName() + e.getMessage());
         }
     }
 
@@ -122,7 +122,7 @@ public class ClientDao {
 
             ps.setLong(1, id);
         } catch (SQLException e) {
-            System.err.println("Error while deleting client with id:  " + id + e.getMessage());
+            throw new RuntimeException("Error while deleting client with id:  " + id + e.getMessage());
         }
 
     }

@@ -3,7 +3,7 @@ table, th, td {
 }
 
 table {
-        background-color: rgba(227, 215, 215, 0.76);
+        background-color: rgba(227, 215, 215, 0.67);;
         margin: 80px;
         border-collapse: collapse;
         border: 1px solid #887b4a;

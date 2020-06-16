@@ -17,7 +17,8 @@
 
 </head>
 <body>
-    <br><h4 class='error'> $errorMsg </h4>
+    <br>
+    <h4 class='error'> $errorMsg </h4>
 
 <div class='container-others'>
         <div class='container-form-add'>
@@ -55,12 +56,12 @@
         </div>
 
         <div class='buttons'>
-                <a href='/clients' class='button' > Cancel </a>
-        </div>
-
-        <div class='buttons'>
                 <input type='submit' value='#if($isUpdate) Update #{else} Add #end'>
         </div>
+
+         <div class='buttons'>
+                        <a href='/clients' class='button' > Cancel </a>
+         </div>
         </container-form>
     </form>
 

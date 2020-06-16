@@ -32,21 +32,24 @@ public class RoomDao {
     }
 
 
-    public List<RoomDto> getAllAvailable(Date startDate, Date endDate) {
+    public List<RoomDto> getAllAvailableOfType(String type, Date endDate, Date startDate) {
 
-        String sql = "SELECT R.ROOM_NUMBER FROM ROOMS R " +
-                "JOIN RESERVATIONS RES " +
-                "ON R.ROOM_NUMBER = RES.ROOM_NUMBER " +
-                "WHERE RES.START_DATE > ? " + //ca sa ma asigur ca rezervarea noua e inaintea celei deja existente
-                "OR RES.END_DATE < ?;"; // ca sa ma asigur ca rezervarea noua se face dupa ce se termina cea veche
+        String sql = "SELECT * FROM ROOMS R " +
+                "LEFT OUTER JOIN RESERVATIONS RES " +
+                "ON RES.ROOM_NUMBER = R.ROOM_NUMBER " +
+                "WHERE R.ROOM_TYPE_DESCRIPTION = ? " +
+                " AND (RES.START_DATE >= ? " + //END DATE ca sa ma asigur ca rezervarea noua e inaintea celei deja existente
+                "OR RES.END_DATE <= ? " +
+                "OR RES.START_DATE IS NULL) ;"; //START DATE ca sa ma asigur ca rezervarea noua se face dupa ce se termina cea veche
 
         List<RoomDto> availableRooms = new ArrayList<>();
 
         try (Connection con = DbManager.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
-            ps.setDate(1, endDate);
-            ps.setDate(2, startDate);
+            ps.setString(1, type);
+            ps.setDate(2, endDate);
+            ps.setDate(3, startDate);
 
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {

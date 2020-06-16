@@ -38,7 +38,7 @@ public class DbInitService {
             ");";
 
     private static final String CREATE_ROOMS_SQL = "CREATE TABLE IF NOT EXISTS ROOMS ( " +
-            "ROOM_NUMBER INTEGER PRIMARY KEY AUTOINCREMENT," +
+            "ROOM_NUMBER INTEGER PRIMARY KEY AUTOINCREMENT, " +
             "ROOM_TYPE_DESCRIPTION TEXT NOT NULL REFERENCES ROOM_TYPES(DESCRIPTION), " +
             "EXTRA_INFO TEXT" +
             ");";
