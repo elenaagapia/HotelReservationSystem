@@ -1,6 +1,7 @@
 package wantsome.project.db.service;
 
 import wantsome.project.db.DbManager;
+import wantsome.project.db.dto.FullReservationDto;
 import wantsome.project.db.dto.PaymentMethod;
 import wantsome.project.db.dto.ReservationDto;
 
@@ -12,18 +13,29 @@ import java.util.Optional;
 
 public class ReservationDao {
 
-    public List<ReservationDto> getAll() {
-        List<ReservationDto> reservations = new ArrayList<>();
+    public List<FullReservationDto> getAll() {
+        List<FullReservationDto> reservations = new ArrayList<>();
 
-        String sql = "SELECT * " +
-                "FROM RESERVATIONS; ";
+        String sql = "SELECT R.*, C.NAME " +
+                "FROM RESERVATIONS R " +
+                "JOIN CLIENTS C ON R.CLIENT_ID = C.ID; ";
 
         try (Connection conn = DbManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
-                reservations.add(extractReservationsFromResult(rs));
+                reservations.add(new FullReservationDto(
+                        rs.getLong("ID"),
+                        rs.getLong("CLIENT_ID"),
+                        rs.getString("NAME"),
+                        rs.getDate("START_DATE"),
+                        rs.getDate("END_DATE"),
+                        rs.getInt("ROOM_NUMBER"),
+                        rs.getString("EXTRA_INFO"),
+                        PaymentMethod.valueOf(rs.getString("PAYMENT_METHOD")),
+                        rs.getDate("CREATED_AT")
+                ));
             }
         } catch (SQLException e) {
             throw new RuntimeException("Error loading all reservations: " + e.getMessage());
@@ -32,11 +44,12 @@ public class ReservationDao {
         return reservations;
     }
 
-    public List<ReservationDto> getAllOrderedByStartDate() {
-        List<ReservationDto> reservations = new ArrayList<>();
+    public List<FullReservationDto> getAllOrderedByStartDate() {
+        List<FullReservationDto> reservations = new ArrayList<>();
 
-        String sql = "SELECT * " +
-                "FROM RESERVATIONS " +
+        String sql = "SELECT R.*, C.NAME " +
+                "FROM RESERVATIONS R " +
+                "JOIN CLIENTS C ON R.CLIENT_ID = C.ID " +
                 "ORDER BY START_DATE; ";
 
         try (Connection conn = DbManager.getConnection();
@@ -44,7 +57,18 @@ public class ReservationDao {
              ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
-                reservations.add(extractReservationsFromResult(rs));
+                reservations.add(new FullReservationDto(
+                        rs.getLong("ID"),
+                        rs.getLong("CLIENT_ID"),
+                        rs.getString("NAME"),
+                        rs.getDate("START_DATE"),
+                        rs.getDate("END_DATE"),
+                        rs.getInt("ROOM_NUMBER"),
+                        rs.getString("EXTRA_INFO"),
+                        PaymentMethod.valueOf(rs.getString("PAYMENT_METHOD")),
+                        rs.getDate("CREATED_AT")
+                ));
+
             }
         } catch (SQLException e) {
             throw new RuntimeException("Error loading all reservations: " + e.getMessage());
@@ -52,6 +76,33 @@ public class ReservationDao {
 
         return reservations;
     }
+
+    public String getClientsName(ReservationDto reservation) {
+        String name = "";
+        long id = reservation.getId();
+        String sql = "SELECT NAME " +
+                "FROM RESERVATIONS " +
+                "LEFT JOIN CLIENTS ON CLIENT_ID = CLIENTS.ID " +
+                "WHERE RESERVATIONS.ID= ? ;";
+
+        try (Connection conn = DbManager.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setLong(1, id);
+
+            try (ResultSet rs = ps.executeQuery()) {
+
+                if (rs.next()) {
+                    name = rs.getString("NAME");
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error loading all names: " + e.getMessage());
+        }
+
+        return name;
+    }
+
 
     public Optional<ReservationDto> getById(long id) {
 
@@ -75,13 +126,15 @@ public class ReservationDao {
 
     }
 
-    public List<ReservationDto> getActiveReservationsOrderedByDate() {
+    public List<FullReservationDto> getActiveReservationsOrderedByDate() {
 
-        List<ReservationDto> reservations = new ArrayList<>();
+        List<FullReservationDto> reservations = new ArrayList<>();
         Date currentDate = Date.valueOf(LocalDate.now());
 
-        String sql = "SELECT * FROM RESERVATIONS " +
-                "WHERE START_DATE >= ? " +
+        String sql = "SELECT R.*, C.NAME " +
+                "FROM RESERVATIONS R " +
+                "JOIN CLIENTS C ON R.CLIENT_ID = C.ID " +
+                "WHERE END_DATE >= ? " +
                 "ORDER BY START_DATE;";
 
         try (Connection connection = DbManager.getConnection();
@@ -90,7 +143,17 @@ public class ReservationDao {
 
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    reservations.add(extractReservationsFromResult(rs));
+                    reservations.add(new FullReservationDto(
+                            rs.getLong("ID"),
+                            rs.getLong("CLIENT_ID"),
+                            rs.getString("NAME"),
+                            rs.getDate("START_DATE"),
+                            rs.getDate("END_DATE"),
+                            rs.getInt("ROOM_NUMBER"),
+                            rs.getString("EXTRA_INFO"),
+                            PaymentMethod.valueOf(rs.getString("PAYMENT_METHOD")),
+                            rs.getDate("CREATED_AT")
+                    ));
                 }
             }
         } catch (SQLException e) {
@@ -244,7 +307,6 @@ public class ReservationDao {
         }
 
     }
-
 
     private ReservationDto extractReservationsFromResult(ResultSet rs) throws SQLException {
 

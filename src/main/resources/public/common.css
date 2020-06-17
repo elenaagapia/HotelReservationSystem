@@ -1,12 +1,26 @@
-body{
-    background-color: #faf4e8;
-    background-image: url('paper-background1.jpg');
-}
+    body{
+        background-color: #faf4e8;
+        background-image: url('new.jpg');
 
-.title {
-    color: #3333cc;
-}
 
-.error {
-    color: red;
-}
+    }
+
+    .title {
+         color: #bd9548;
+         font-size: 25px;
+    }
+
+    .error {
+        font-size: 25px;
+        color: red;
+        text-align: center;
+
+    }
+    table{
+         hover {background-color: black;}
+         width: 85%
+
+    }
+
+
+;}

@@ -1,54 +1,68 @@
 <html>
 <head>
+    <link rel="stylesheet" type="text/css" href="/add_form.css">
     <link rel="stylesheet" type="text/css" href="/common.css">
-    <link rel="stylesheet" type="text/css" href="/add.css">
+
+    <style>
+    input[type=submit], a {
+         background-color: black;
+                 border: none;
+                 color: white;
+                 width: 250px;
+                 font-size: 18px;
+                 text-decoration: none;
+                 display: inline-block;
+                 font-family: inherit;
+      }</style>
+
 </head>
-
-
 <body>
-
     <br>
+    <h4 class='error'> $errorMsg </h4>
 
-    <h3 class='title'>
+<div class='container-others'>
+        <div class='container-form-add'>
+            <h3 class='title'>
         #if($isUpdate)
             Update client
         #else
             Add new client
         #end
-    </h3>
+             </h3>
 
-    <h4 class='error'> $errorMsg </h4>
+<form action='#' method='post'>
 
-    <form method='post'>
-        <table>
+         <div class='form-field'>
 
             #if($isUpdate)
-            <tr>
-                <td> Id: </td>
-                <td> <input type='text' name='id' value='$!prevId' readonly> </td>
-            </tr>
-                #end
+               Id:
+               <input type='text' name='id' value='$prevId' readonly>
+            #end
+        </div>
 
-            <tr>
-                <td> Name: </td>
-                <td> <input type='text' name='name' value='$prevName' required> </td>
-            </tr>
+        <div class='form-field'>
+               Name:
+               <input type='text' name='name' value='$prevName' required>
+        </div>
 
-            <tr>
-                <td> Email: </td>
-                <td> <input type='text' name='email' value='$prevEmail' required> </td>
-            </tr>
+        <div class='form-field'>
+                Email:
+                <input type='text' name='email' value='$prevEmail' required>
+        </div>
 
-            <tr>
-                <td> Address: </td>
-                <td> <input type='text' name='address' value='$prevAddress' required> </td>
-            </tr>
+        <div class='form-field'>
+                Address:
+                <input type='text' name='address' value='$prevAddress' required>
+        </div>
 
-            <tr>
-                <td> <button onclick="location.href='/clients'" type="button"> Cancel </button> </td>
-                <td> <input type='submit' value='#if($isUpdate) Update #{else} Add #end'> </td>
-            </tr>
-        </table>
+        <div class='buttons'>
+                <input type='submit' value='#if($isUpdate) Update #{else} Add #end'>
+        </div>
+
+         <div class='buttons'>
+                        <a href='/clients' class='button' > Cancel </a>
+         </div>
+        </container-form>
     </form>
 
 </body>

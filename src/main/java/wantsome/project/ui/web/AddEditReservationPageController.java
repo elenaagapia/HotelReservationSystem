@@ -5,10 +5,14 @@ import spark.Response;
 import wantsome.project.db.dto.ClientDto;
 import wantsome.project.db.dto.PaymentMethod;
 import wantsome.project.db.dto.ReservationDto;
+import wantsome.project.db.dto.RoomDto;
 import wantsome.project.db.service.ClientDao;
 import wantsome.project.db.service.ReservationDao;
+import wantsome.project.db.service.RoomDao;
+import wantsome.project.db.service.RoomTypeDao;
 
 import java.sql.Date;
+import java.time.LocalDate;
 import java.util.*;
 
 import static wantsome.project.ui.web.SparkUtil.render;
@@ -17,9 +21,11 @@ public class AddEditReservationPageController {
 
     private static final ReservationDao reservationDao = new ReservationDao();
     private static final ClientDao clientDao = new ClientDao();
+    private static final RoomDao roomDao = new RoomDao();
+    private static final RoomTypeDao roomTypeDao = new RoomTypeDao();
 
     public static String showAddForm(Request req, Response res) {
-        return renderAddUpdateForm("", "", "", "", "", "", "", "", "");
+        return renderAddUpdateForm("", "", "", "", "", "", "", "", "", "");
     }
 
     public static String showUpdateForm(Request req, Response res) {
@@ -36,8 +42,9 @@ public class AddEditReservationPageController {
                         String.valueOf(reservation.getRoomNumber()),
                         reservation.getExtraInfo() != null ? reservation.getExtraInfo() : "",
                         reservation.getPayment().name(),
-                        reservation.getCreatedAt().toString()
-                        , "");
+                        reservation.getCreatedAt().toString(),
+                        roomDao.get(reservation.getRoomNumber()).get().getRoomType().name(),
+                        "");
             }
         } catch (Exception e) {
             System.err.println("Error loading reservation with id '" + id + "': " + e.getMessage());
@@ -47,14 +54,26 @@ public class AddEditReservationPageController {
 
     private static String renderAddUpdateForm(String id, String clientId, String startDate,
                                               String endDate, String roomNumber, String extraInfo,
-                                              String paymentMethod, String createdAt, String errorMessage) {
+                                              String paymentMethod, String createdAt, String roomType, String errorMessage) {
         Map<String, Object> model = new HashMap<>();
         List<ClientDto> clients = clientDao.getAll();
+        LocalDate todayDate = LocalDate.now();
 
         model.put("prevId", id);
         model.put("prevClientId", clientId);
         model.put("prevStartDate", startDate);
         model.put("prevEndDate", endDate);
+        model.put("prevRoomType", roomType);
+
+//to show only the room numbers of a specific type
+        if (roomType != null & !roomType.isEmpty()) {
+            List<RoomDto> roomsOfType = roomDao.getAllAvailableOfType(String.valueOf(roomType), Date.valueOf(endDate), Date.valueOf(startDate));
+            model.put("roomsOfType", roomsOfType);
+        } else {
+            model.put("roomsOfType", roomDao.getAll());
+        }
+
+
         model.put("prevRoomNumber", roomNumber);
         model.put("prevExtraInfo", extraInfo);
         model.put("prevPaymentMethod", paymentMethod);
@@ -62,6 +81,8 @@ public class AddEditReservationPageController {
         model.put("errorMsg", errorMessage);
         model.put("isUpdate", id != null && !id.isEmpty());
         model.put("clients", clients);
+        model.put("todayDate", todayDate);
+
 
         return render(model, "add_edit_reservation.vm");
     }
@@ -72,12 +93,23 @@ public class AddEditReservationPageController {
         String clientId = req.queryParams("clientId");
         String startDate = req.queryParams("startDate");
         String endDate = req.queryParams("endDate");
+        String roomType = req.queryParams("roomType");
         String roomNumber = req.queryParams("roomNumber");
         String extraInfo = req.queryParams("extraInfo");
         String paymentMethod = req.queryParams("paymentMethod");
         String createdAt = req.queryParams("createdAt");
 
 
+        String serverAction = req.queryParams("serverAction");
+        if (serverAction.equals("refresh")) {
+
+            return renderAddUpdateForm(id, clientId, startDate, endDate, roomNumber, extraInfo, paymentMethod, createdAt, roomType, "");
+        }
+        return tryPerformAddUpdateAction(res, id, clientId, startDate, endDate, roomNumber, extraInfo, paymentMethod, createdAt, roomType);
+    }
+
+    private static Object tryPerformAddUpdateAction(Response res, String id, String clientId, String startDate,
+                                                    String endDate, String roomNumber, String extraInfo, String paymentMethod, String createdAt, String roomType) {
         boolean isUpdateCase = id != null && !id.isEmpty();
 
         try {
@@ -93,7 +125,7 @@ public class AddEditReservationPageController {
             return res;
 
         } catch (Exception e) {
-            return renderAddUpdateForm(id, clientId, startDate, endDate, roomNumber, extraInfo, paymentMethod, createdAt, e.getMessage());
+            return renderAddUpdateForm(id, clientId, startDate, endDate, roomNumber, extraInfo, paymentMethod, createdAt, roomType, e.getMessage());
         }
     }
 
@@ -101,7 +133,6 @@ public class AddEditReservationPageController {
                                                               String endDate, String roomNumber, String extraInfo, String paymentMethod) {
 
         long idValue = id != null && !id.isEmpty() ? Long.parseLong(id) : -1;
-
         long clientIdValue = Long.parseLong(clientId);
 
         if (startDate == null || startDate.isEmpty()) {
@@ -115,8 +146,8 @@ public class AddEditReservationPageController {
                     "', must be a date in format: yyyy-[m]m-[d]d");
         }
 
-        if (endDate == null || endDate.isEmpty()) {
-            throw new RuntimeException("End date is required!");
+        if (endDate == null || endDate.isEmpty() || endDate.compareTo(startDate) <= 0) {
+            throw new RuntimeException("End date is required and should be after the start date!");
         }
         Date endDateValue;
         try {

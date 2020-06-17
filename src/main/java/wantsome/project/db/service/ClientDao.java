@@ -87,7 +87,7 @@ public class ClientDao {
             ps.execute();
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error inserting client " + client.getName() + e.getMessage());
+            throw new RuntimeException("Error inserting client " + client.getName() + ". This name or email address may already exist. ", e);
         }
 
     }
@@ -95,9 +95,9 @@ public class ClientDao {
     public void update(ClientDto client) {
         String sql = "UPDATE CLIENTS " +
                 "SET NAME = ?, " +
-                "EMAIL = ?, " +
-                "ADDRESS = ? " +
-                "WHERE ID = ?;";
+                "EMAIL = ?," +
+                "ADDRESS = ?" +
+                "WHERE ID = ?";
 
         try (Connection connection = DbManager.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -115,14 +115,12 @@ public class ClientDao {
     }
 
     public void delete(long id) {
-        String sql = "DELETE FROM CLIENTS WHERE ID = ?;";
+        String sql = "DELETE FROM CLIENTS WHERE ID = ?";
 
         try (Connection connection = DbManager.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
 
             ps.setLong(1, id);
-            ps.execute();
-
         } catch (SQLException e) {
             throw new RuntimeException("Error while deleting client with id:  " + id + e.getMessage());
         }

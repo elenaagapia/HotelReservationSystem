@@ -1,14 +1,24 @@
 <html>
 <head>
     <link rel="stylesheet" type="text/css" href="/common.css">
-    <link rel="stylesheet" type="text/css" href="/main.css">
+    <link rel="stylesheet" type="text/css" href="/tables.css">
+
+    <style>
+        a { text-decoration: none; }
+      </style>
 </head>
 
 
 <body>
+     <ul>
+      <li><a href="/main">Reservations</a></li>
+      <li><a href="/rooms">Rooms</a></li>
+      <li><a href="/clients">Clients</a></li>
+    </ul>
 
-    <a href='/add_client'> Add new client </a>
-    <br><br>
+    <button class="plus-button">
+    <a href='/add_client'> + </a>
+    </button>
 
     <table>
 
@@ -21,9 +31,8 @@
 
         #foreach($client in $clients)
             <tr>
-                <td width=5% align=center>
-                 <a href='/update_client/$client.id'> $client.id </a>
-
+                <td width=15% align=center>
+                    $client.id
                 </td>
                 <td width=15% align=center>
                     $client.name
@@ -39,13 +48,15 @@
                         Delete
                     </a>
                 </td>
+                <td width=10% align=center>
+                    <a href='/update_client/$client.id'>
+                        Edit
+                    </a>
+                </td>
             </tr>
         #end
 
     </table>
-
-    <br>
-    <a href='/main'> Back to reservations </a>
 
 </body>
 </html>

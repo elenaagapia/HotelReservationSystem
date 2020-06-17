@@ -20,6 +20,7 @@ public class Main {
         DbInitService.createTablesAndInitialData();
         DbInitService.insertIntoRoomTypes();
         DbInitService.insertIntoRooms();
+
     }
 
     private static void configureRoutesAndStart() {
@@ -35,6 +36,7 @@ public class Main {
         post("/update/:id", AddEditReservationPageController::handleAddUpdateRequest);
 
         get("/delete/:id", ReservationsPageController::handleDeleteRequest);
+        get("/invoice/:id", InvoicePageController::showInvoiceForReservation);
 
         //---CLIENTS---//
         get("/clients", ClientsPageController::showClientsPage);

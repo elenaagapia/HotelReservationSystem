@@ -39,14 +39,14 @@ public class DbInitService {
 
     private static final String CREATE_ROOMS_SQL = "CREATE TABLE IF NOT EXISTS ROOMS ( " +
             "ROOM_NUMBER INTEGER PRIMARY KEY AUTOINCREMENT, " +
-            "ROOM_TYPE_DESCRIPTION TEXT REFERENCES ROOM_TYPES(DESCRIPTION), " +
+            "ROOM_TYPE_DESCRIPTION TEXT NOT NULL REFERENCES ROOM_TYPES(DESCRIPTION), " +
             "EXTRA_INFO TEXT" +
             ");";
 
 
     private static final String CREATE_RESERVATIONS_SQL = "CREATE TABLE IF NOT EXISTS RESERVATIONS ( " +
             "ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
-            "CLIENT_ID INTEGER NOT NULL REFERENCES CLIENTS(ID), " +
+            "CLIENT_ID TEXT NOT NULL REFERENCES CLIENTS(ID), " +
             "START_DATE DATETIME NOT NULL, " +
             "END_DATE DATETIME NOT NULL, " +
             "ROOM_NUMBER INTEGER NOT NULL REFERENCES ROOMS(ROOM_NUMBER), " +
@@ -73,6 +73,13 @@ public class DbInitService {
             }
         }
     }
+
+//    public static void insertIntoClients() {
+//        ClientDao clientDao = new ClientDao();
+//        if (clientDao.getAll().isEmpty()) {
+//            clientDao.insert(new ClientDto(1, "Pal Anca", "ancapal12@gmail.com", "Pascani, jud. Iasi"));
+//        }
+//    }
 
     public static void insertIntoRooms() {
         RoomDao roomDao = new RoomDao();

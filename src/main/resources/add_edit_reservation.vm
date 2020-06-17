@@ -1,92 +1,128 @@
 <html>
 <head>
+    <title>Booking</title>
+    <link rel="stylesheet" type="text/css" href="/add_form.css">
     <link rel="stylesheet" type="text/css" href="/common.css">
-    <link rel="stylesheet" type="text/css" href="/add.css">
+
+     <style>
+     input[type=submit], a {
+         background-color: black;
+         border: none;
+         color: white;
+         width: 250px;
+         font-size: 18px;
+         text-decoration: none;
+         display: inline-block;
+         font-family: inherit;
+       }</style>
+
 </head>
 
-
 <body>
+<!--to display errors-->
+    <br><h4 class='error'> $errorMsg </h4>
 
-    <br>
+<div class='container'>
+        <div class='container-left'>
+            <h1 class='heading'> Make Your<br> Reservation Here</h1>
+        </div>
 
-    <h3 class='title'>
-        #if($isUpdate)
-            Update reservation
-        #else
-            Add new reservation
-        #end
-    </h3>
+        <div class='container-form'>
+            <form action='#' method='post'>
+                <h2 class='heading heading yellow'>Reservation Form</h2>
+                    <h3 class='title'>
+                        #if($isUpdate)
+                            Update reservation
+                        #else
+                            Add new reservation
+                        #end
+                    </h3>
 
+         <div class='form-field'>
+             #if($isUpdate)
+                 Id:
+                 <input type='text' name='generatedId' value='$!prevId' readonly> </td>
+             #end
+         </div>
 
-    <!-- To display error/validation messages (if any was set from Java code)-->
-    <h4 class='error'> $errorMsg </h4>
-
-
-    <form method='post'>
-        <table>
-
-            <!-- row with Id is optional, show only for Update case (not Add, when it's not set anyway) -->
-            #if($isUpdate)
-            <tr>
-                <td> Id: </td>
-                <td> <input type='text' name='generatedId' value='$!prevId' readonly> </td>
-            </tr>
-            #end
-
-            <tr>
-                <td> Client: </td>
-                <td>
-                    <select name='clientId'>
+         <div class='form-field'>
+                Client:
+                   <select name='clientId'>
                         #foreach ($client in $clients)
-                            <option value='$client.id'  #if($prevClientId==$client.id) selected #end > $client.name </option>
+                              <option value='$client.id'  #if($prevClientId==$client.id) selected #end > $client.name </option>
                         #end
                     </select>
-                </td>
-            </tr>
+         </div>
 
-            <tr>
-                <td> Start date: </td>
-                <td> <input type='date' name='startDate' value='$prevStartDate' required> </td>
-            </tr>
+         <div class='form-field'>
+                Start date:
+                <input type='date' name='startDate' value='$prevStartDate' min='$todayDate' required>
 
-            <tr>
-                <td> End date: </td>
-                <td> <input type='date' name='endDate' value='$prevEndDate' required> </td>
-            </tr>
+         </div>
+            <div class='form-field'>
+                End date:
+                <input type='date' name='endDate' value='$prevEndDate' min='$todayDate' required>
+         </div>
 
-            <tr>
-                <td> Room: </td>
-                <td> <input type='number' name='roomNumber' value='$!prevRoomNumber' min='1' max='16' required> </td>
-            </tr>
+         <div class='form-field'>
+                 Type of room:
+                      <select name='roomType'  onchange='myFunction()'>
+                            <option value='SINGLE'   #if($prevRoomType=='SINGLE')   selected #end > SINGLE </option>
+                            <option value='DOUBLE' #if($prevRoomType=='DOUBLE') selected #end > DOUBLE </option>
+                            <option value='TWIN' #if($prevRoomType=='TWIN') selected #end > TWIN </option>
+                            <option value='APARTMENT' #if($prevRoomType=='APARTMENT') selected #end > APARTMENT </option>
+                      </select>
 
-            <tr>
-                <td> Extra Info (optional): </td>
-                <td> <input type='text' name='extraInfo' value='$prevExtraInfo'> </td>
-            </tr>
+                       <script>
+                       function myFunction() {
+                         document.getElementById('serverAction').value = 'refresh';
+                         document.getElementById('submitBtn').click();
+                       }
+                       </script>
+         </div>
 
+         <div class='form-field'>
+                Room number:
+                    <select name='roomNumber'>
+                     #foreach ($room in $roomsOfType)
+                              <option value='$room.number'  #if($prevRoomNumber==$room.number) selected #end > $room.number </option>
+                     #end
+                     </select>
+         </div>
 
-            <tr>
-                <td> Payment Method: </td>
-                <td>
+         <div class='form-field'>
+                Extra Info (optional):
+                <input type='text' name='extraInfo' value='$prevExtraInfo'>
+         </div>
+
+         <div class='form-field'>
+                Payment Method:
                     <select name='paymentMethod'>
                         <option value="CARD"   #if($prevPaymentMethod=='CARD')   selected #end > Card </option>
                         <option value="CASH" #if($prevPaymentMethod=='CASH') selected #end > Cash </option>
                     </select>
-                </td>
-            </tr>
+         </div>
 
+         <div class='form-field'>
             #if($isUpdate)
-            <tr>
-                <td> Date of Reservation: </td>
-                <td> <input type='date' name='createdAt' value='$prevCreatedAt' readonly> </td>
-            </tr>
+                Date of Reservation:
+                <input type='date' name='createdAt' value='$prevCreatedAt' readonly>
             #end
+         </div>
 
-            <tr>
-                <td> <button onclick="location.href='/main'" type="button"> Cancel </button> </td>
-                <td> <input type='submit' value='#if($isUpdate) Update #{else} Add #end'> </td>
-            </tr>
-        </table>
+         <div class='buttons'>
+               <input type='submit' id='submitBtn' value='#if($isUpdate) Update #{else} Add #end'>
+         </div>
+
+         <div class='buttons'>
+                <a href='/main'> Cancel </a>
+         </div>
+
+        <!-- hidden form field, not displayed on UI, but sent to server; here set by a JavaScript action, on refresh case, see dueDate input above -->
+        <input type='hidden' id='serverAction' name='serverAction' value=''>
+
+        <!-- needed to be sent back to server, for update case-->
+        <input type='hidden' name='id' value='$!prevId'>
     </form>
 
 </body>

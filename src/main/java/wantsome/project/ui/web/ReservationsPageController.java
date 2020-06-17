@@ -2,7 +2,7 @@ package wantsome.project.ui.web;
 
 import spark.Request;
 import spark.Response;
-import wantsome.project.db.dto.ReservationDto;
+import wantsome.project.db.dto.FullReservationDto;
 import wantsome.project.db.service.ReservationDao;
 
 import java.util.HashMap;
@@ -20,19 +20,23 @@ public class ReservationsPageController {
         // hide past reservations
         boolean hidePastReservations = getHideOldReservationsFromParamOrSes(req);
 
-        List<ReservationDto> allReservations = reservationDao.getAll();
-        List<ReservationDto> activeReservations = reservationDao.getActiveReservationsOrderedByDate();
+        List<FullReservationDto> allReservations = reservationDao.getAllOrderedByStartDate();
+        List<FullReservationDto> activeReservations = reservationDao.getActiveReservationsOrderedByDate();
         long activeCount = activeReservations.stream().count();
         long oldReservationsCount = allReservations.size() - activeCount;
-
         Map<String, Object> model = new HashMap<>();
+
         if (hidePastReservations) {
             model.put("reservations", activeReservations);
-        } else
+        } else {
             model.put("reservations", allReservations);
+        }
+
         model.put("activeCount", activeCount);
         model.put("oldReservationsCount", oldReservationsCount);
         model.put("hidePastReservations", hidePastReservations);
+
+
         return render(model, "reservations.vm");
     }
 
@@ -51,10 +55,11 @@ public class ReservationsPageController {
         try {
             reservationDao.delete(Long.parseLong(id));
         } catch (Exception e) {
-            System.out.println("Error deleting reservation with id '" + id + "': " + e.getMessage());
+            throw new RuntimeException("Error deleting reservation with id '" + id + "': " + e.getMessage());
         }
         res.redirect("/main");
         return res;
     }
+
 
 }

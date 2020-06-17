@@ -1,27 +1,36 @@
 <html>
 <head>
     <link rel="stylesheet" type="text/css" href="/common.css">
-    <link rel="stylesheet" type="text/css" href="/main.css">
+    <link rel="stylesheet" type="text/css" href="/tables.css">
+
+    <style>
+        a { text-decoration: none; }
+      </style>
 </head>
 
-
 <body>
+     <ul>
+      <li><a href="/main">Reservations</a></li>
+      <li><a href="/rooms">Rooms</a></li>
+      <li><a href="/clients">Clients</a></li>
+      <li><a href='/roomTypes'>Room types</a></li>
+    </ul>
 
-    <a href='/add_room'> Add new room </a>
-    <br><br>
+        <button class="plus-button">
+    <a href='/add_room'> + </a>
+        </button>
 
     <table>
-
         <tr>
             <th> Number </th>
             <th> Room Type </th>
             <th> Extra Information </th>
         </tr>
 
-        #foreach($room in $rooms)
-            <tr>
+            #foreach($room in $rooms)
+                <tr>
                 <td width=5% align=center>
-                 <a href='/update_room/$room.number' title='Update'>
+
                      $room.number
                  </a>
 
@@ -39,17 +48,12 @@
                         Delete
                     </a>
                 </td>
+
+                <td width=10% align=center>
+                <a href='/update_room/$room.number' title='Update'>Edit</a>
             </tr>
         #end
 
     </table>
-
-    <br>
-    <a href='/main'> Back to reservations </a>
-    <br>
-    <td> <button onclick="location.href='/main'" type="button"> Back </button> </td>
-    <br>
-    <a href='/roomTypes'> View Room types </a>
-
 </body>
 </html>

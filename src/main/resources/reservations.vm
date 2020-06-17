@@ -2,13 +2,21 @@
 <head>
     <!-- include some css files (taken from /public/.. folder) -->
     <link rel="stylesheet" type="text/css" href="/common.css">
-    <link rel="stylesheet" type="text/css" href="/main.css">
-</head>
+    <link rel="stylesheet" type="text/css" href="/tables.css">
 
+</head>
 
 <body>
 
-    <br><br>
+     <ul>
+      <li><a href="/main">Reservations</a></li>
+      <li><a href="/rooms">Rooms</a></li>
+      <li><a href="/clients">Clients</a></li>
+    </ul>
+
+<button class="plus-button">
+    <a href='/add'> + </a>
+    </button>
 
     <!-- first row above table, with some labels and links -->
 
@@ -25,18 +33,17 @@
 
     <!-- table of reservations -->
 
-    <a href='/add'> Add new reservation </a>
-    <br><br>
+
 
     <table>
 
         <!-- header row first -->
         <tr>
             <th> Id </th>
-            <th> Client Id </th>
+            <th> Client </th>
             <th> Start date </th>
             <th> End Date </th>
-            <th> Room </th>
+            <th> Room number</th>
             <th> Extra Info </th>
             <th> Payment method </th>
             <th> Date of Reservation </th>
@@ -46,20 +53,18 @@
         #foreach($reservation in $reservations)
             <tr>
                 <td width=5% align=center>
-                    <a href='/update/$reservation.id' title='Update'>
                         $reservation.id
-                    </a>
                 </td>
 
-                <td width=5% align=center>
-                    $reservation.clientId
+                <td width=10% align=center>
+                    $reservation.clientName
                 </td>
 
-                <td width=15% align=center>
+                <td width=10% align=center>
                     $reservation.startDate
                 </td>
 
-                <td width=15% align=center>
+                <td width=10% align=center>
                     $reservation.endDate
                 </td>
 
@@ -67,12 +72,12 @@
                     $reservation.roomNumber
                 </td>
 
-                <td width=30%>
+                <td width=25%>
                     $!reservation.extraInfo
                 </td>
 
-                <td width=5% align=center>
-                    $reservation.paymentMethod
+                <td width=8% align=center>
+                    $reservation.payment
                 </td>
 
                 <td width=5% align=center>
@@ -80,21 +85,20 @@
                 </td>
 
                 <td width=5% align=center>
+                    <a href='/invoice/$reservation.id' > See invoice</a>
+                </td>
+
+                <td width=5% align=center>
                     <a href='/delete/$reservation.id' onclick="return confirm('Are you sure you want to delete note with id $reservation.id ?')">
                         Delete
                     </a>
-                </td>
+                <td width=5% align=center>
+                    <a href='/update/$reservation.id' title='Update'>
+                        Edit
+                    </a>
             </tr>
         #end
 
     </table>
-
-    <br>
-    <a href='/clients'> View Clients </a>
-    <br>
-    <a href='/rooms'> View Rooms </a>
-
-    <br><br><br>
-
 </body>
 </html>

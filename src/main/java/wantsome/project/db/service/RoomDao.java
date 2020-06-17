@@ -25,28 +25,31 @@ public class RoomDao {
                 rooms.add(extractRoomFromResult(rs));
             }
         } catch (SQLException e) {
-            System.err.println("Error loading all rooms: " + e.getMessage());
+            throw new RuntimeException("Error loading all rooms: " + e.getMessage());
         }
 
         return rooms;
     }
 
 
-    public List<RoomDto> getAllAvailable(Date startDate, Date endDate) {
+    public List<RoomDto> getAllAvailableOfType(String type, Date endDate, Date startDate) {
 
-        String sql = "SELECT R.ROOM_NUMBER FROM ROOMS R " +
-                "JOIN RESERVATIONS RES " +
-                "ON R.ROOM_NUMBER = RES.ROOM_NUMBER " +
-                "WHERE RES.START_DATE > ? " + //ca sa ma asigur ca rezervarea noua e inaintea celei deja existente
-                "OR RES.END_DATE < ?;"; // ca sa ma asigur ca rezervarea noua se face dupa ce se termina cea veche
+        String sql = "SELECT * FROM ROOMS R " +
+                "LEFT OUTER JOIN RESERVATIONS RES " +
+                "ON RES.ROOM_NUMBER = R.ROOM_NUMBER " +
+                "WHERE R.ROOM_TYPE_DESCRIPTION = ? " +
+                " AND (RES.START_DATE >= ? " + //END DATE ca sa ma asigur ca rezervarea noua e inaintea celei deja existente
+                "OR RES.END_DATE <= ? " +
+                "OR RES.START_DATE IS NULL) ;"; //START DATE ca sa ma asigur ca rezervarea noua se face dupa ce se termina cea veche
 
         List<RoomDto> availableRooms = new ArrayList<>();
 
         try (Connection con = DbManager.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
-            ps.setDate(1, endDate);
-            ps.setDate(2, startDate);
+            ps.setString(1, type);
+            ps.setDate(2, endDate);
+            ps.setDate(3, startDate);
 
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -61,9 +64,9 @@ public class RoomDao {
         return availableRooms;
     }
 
-    public List<RoomDto> getAllOfType(RoomTypes type) throws SQLException {
-        String sql = "SELECT ROOM_NUMBER FROM ROOMS " +
-                "WHERE ROOM_TYPE_DESCRIPTION = ?; ";
+    public List<RoomDto> getAllOfType(RoomTypes type) {
+        String sql = "SELECT * FROM ROOMS " +
+                "WHERE ROOM_TYPE_DESCRIPTION = ? ";
 
         List<RoomDto> roomsOfType = new ArrayList<>();
 
@@ -76,6 +79,8 @@ public class RoomDao {
                     roomsOfType.add(extractRoomFromResult(rs));
                 }
             }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error while loading rooms of type:  " + type + e.getMessage());
         }
         return roomsOfType;
     }
@@ -101,7 +106,7 @@ public class RoomDao {
                 }
             }
         } catch (SQLException e) {
-            System.err.println("Error loading occupied rooms: " + e.getMessage());
+            throw new RuntimeException("Error loading occupied rooms: " + e.getMessage());
         }
 
 
@@ -132,7 +137,7 @@ public class RoomDao {
                 }
             }
         } catch (SQLException e) {
-            System.err.println("Error loading occupied rooms: " + e.getMessage());
+            throw new RuntimeException("Error loading occupied rooms: " + e.getMessage());
         }
 
 
@@ -153,7 +158,7 @@ public class RoomDao {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e.getMessage());
         }
         return Optional.empty();
     }
@@ -173,7 +178,7 @@ public class RoomDao {
             ps.execute();
 
         } catch (SQLException e) {
-            System.err.println("Error inserting room nr:" + room.getNumber() + e.getMessage());
+            throw new RuntimeException("Error inserting room nr:" + room.getNumber() + e.getMessage());
         }
 
     }
@@ -194,7 +199,7 @@ public class RoomDao {
             ps.executeUpdate();
 
         } catch (SQLException e) {
-            System.err.println("Error while updating room nr: " + room.getNumber() + e.getMessage());
+            throw new RuntimeException("Error while updating room nr: " + room.getNumber() + e.getMessage());
         }
     }
 
@@ -207,7 +212,7 @@ public class RoomDao {
             ps.setLong(1, number);
             ps.execute();
         } catch (SQLException e) {
-            System.err.println("Error while deleting room with number:  " + number + e.getMessage());
+            throw new RuntimeException("Error while deleting room with number:  " + number + e.getMessage());
         }
 
     }

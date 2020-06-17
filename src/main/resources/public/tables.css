@@ -1,0 +1,61 @@
+table, th, td {
+    border: 1px solid #887b4a;
+}
+
+table {
+        background-color: rgba(227, 215, 215, 0.67);;
+        margin: 80px;
+        border-collapse: collapse;
+        border: 1px solid #887b4a;
+        text-align: center;
+        width: 85%;
+}
+
+th {
+    color: black;
+    height: 60px;
+    font-size: 21px;
+
+}
+
+td {
+    padding: 10px;
+    font-size: 16px;
+    text-decoration: none;
+}
+ul {
+  list-style-type: none;
+  padding: 0;
+  overflow: hidden;
+  background-color: #333;
+}
+
+li {
+  float: left;
+}
+
+li a {
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+/* Change the link color to #111 (black) on hover */
+li a:hover {
+  background-color: #111;
+}
+.plus-button {
+	border: 3px solid lightgrey;
+	background-color: #fff;
+	font-size: 20px;
+	height: 2em;
+	width: 2em;
+	border-radius: 99px;
+	position: relative;
+}
+a {
+    text-decoration: none;
+    color: #bf0e0e;
+}
